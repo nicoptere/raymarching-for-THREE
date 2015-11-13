@@ -2,6 +2,7 @@
 ![screenshot](https://cdn.rawgit.com/nicoptere/raymarching-for-THREE/master/img/cover.jpg)
 <br/>
 a base to work with raymarching in THREE.js [live demo here](https://cdn.rawgit.com/nicoptere/raymarching-for-THREE/master/index.html)<br>
+[THREE.js](http://threejs.org/) is a popular WebGL library, Raymarching Distance Fields is trendy nowadays, this is a way to bring them together. most of (all!) the work is done by the fragment shader, do not expect anything even remotely complex on the javascript side :)
 
 <hr>
 helpful links:

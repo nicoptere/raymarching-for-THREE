@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <style>
+        head, body{
+            width:100%;
+            height:100%;
+            overflow: hidden;
+            top:0;
+            left:0;
+            margin:0;
+            padding:0;
+        }
+    </style>
+</head>
+<body>
+<script src="vendor/three.min.js"></script>
+
+<script src="vendor/postprocessing/EffectComposer.js"></script>
+<script src="vendor/postprocessing/RenderPass.js"></script>
+<script src="vendor/postprocessing/ShaderPass.js"></script>
+<script src="vendor/postprocessing/MaskPass.js"></script>
+
+<script src="vendor/shaders/CopyShader.js"></script>
+<script src="vendor/shaders/FXAAShader.js"></script>
+
+<script src="raymarcher.js"></script>
+<script src="composer.js"></script>
+
+<script>
+
+    var rm;
+    var composer;
+    function init() {
+
+        rm = new RayMarcher( "glsl/fragment.glsl" );
+        document.body.appendChild( rm.domElement );
+
+        composer = new Composer( rm.renderer, rm.scene, rm.camera );
+        composer.setSize( window.innerWidth, window.innerHeight );
+    }
+
+    function animate() {
+
+
+        requestAnimationFrame( animate );
+        rm.render();
+        if(rm.loaded ) composer.render();
+
+    }
+
+    init();
+    animate();
+
+
+
+</script>
+
+</body>
+</html>

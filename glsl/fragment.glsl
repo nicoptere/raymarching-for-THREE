@@ -150,24 +150,15 @@ vec2 field( vec3 position )
     vec2 rb = roundBox( position, vec3(2.0,2.0,2.0),  0.5, zero, quat );
 
     //torus
-    vec2 to0 = torus( position, vec2( 3.,.25), zero, vec4( 1., 1., 0., 0. + time * .2 ) );
-    vec2 to1 = torus( position, vec2( 3.,.25), zero, vec4( 1., 1., 0., PI * .5 + time * .2 ) );
+    vec2 to0 = torus( position, vec2( 4.,.15), zero, vec4( 1., 1., 0., 0. + time * .2 ) );
+    vec2 to1 = torus( position, vec2( 4.,.15), zero, vec4( 1., 1., 0., PI * .5 + time * .2 ) );
 
     //spheres
-    vec2 sfr = sphere( position, 2.0, vec3(  0., 0., 2.), quat );
-    vec2 sba = sphere( position, 2.0, vec3(  0., 0.,-2.), quat );
-    vec2 sto = sphere( position, 2.0, vec3(  0., 2., 0.), quat );
-    vec2 sbo = sphere( position, 2.0, vec3(  0.,-2., 0.), quat );
-    vec2 sle = sphere( position, 2.0, vec3(  2. , 0., 0.), quat );
-    vec2 sri = sphere( position, 2.0, vec3( -2. , 0., 0.), quat );
-
+    vec2 sre = sphere( position, 3.0, zero, quat );
     vec2 sce = sphere( position, 1., zero, quat ) + perlin( position + time ) * .25;
 
     //composition
-
-    vec2 res = subtract( sfr, subtract( sba, subtract( sbo, subtract( sto, unionAB( sri, unionAB( sle,rb ) ) ) ) ) );
-
-    return smin( sce, smin( to0, smin( to1, res, pnoise ), pnoise ), pnoise);
+    return smin( sce, smin( to0, smin( to1, subtract( sre, rb  ), pnoise ), pnoise ), pnoise);
 
 }
 

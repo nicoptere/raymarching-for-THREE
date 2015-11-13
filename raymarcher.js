@@ -39,7 +39,7 @@ var RayMarcher = function(){
         var scope = this;
 
         var tl = new THREE.TextureLoader();
-        tl.load( "https://cdn.rawgit.com/nicoptere/raymarching-for-THREE/master/img/matcap.png", function(texture){
+        tl.load( "img/matcap.png", function(texture){
             scope.material.uniforms.map.value = texture;
             texture.needsUpdate = true;
         });

@@ -1,7 +1,18 @@
 
 uniform vec2 resolution;
 uniform float time;
-uniform sampler2D map;
+uniform float fov;
+uniform float maxDistance;
+uniform float raymarchPrecision;
+uniform vec3 camera;
+uniform vec3 target;
+
+uniform vec3 color0;
+uniform vec3 color1;
+
+uniform vec3 light0;
+uniform vec3 light1;
+
 
 //uses most of the StackGL methods
 //https://github.com/stackgl
@@ -256,32 +267,19 @@ vec3 rimlight( vec3 pos, vec3 nor )
 
 void main() {
 
-
-    vec3 color0 = vec3(0.9, 0.9, 0.0);    //yellow
-    vec3 color1 = vec3(0.0, 0.2, 0.9);    //blue
-
-    //default color ( background )
-    vec2 xy = gl_FragCoord.xy / resolution;
-    gl_FragColor = vec4( mix( color0, color1, sin( xy.y + 0.5 ) ) * 2., 1. );
-
-    float cameraAngle   = 0.;//0.8 * time;
-    float cameraRadius  = 20.;
-
     vec2  screenPos    = squareFrame( resolution );
-    float lensLength   = 2.5;
-    vec3  rayOrigin    = vec3( cameraRadius * sin(cameraAngle), 0., cameraRadius * cos(cameraAngle));
-    vec3  rayTarget    = vec3(0, 0, 0);
-    vec3  rayDirection = getRay(rayOrigin, rayTarget, screenPos, lensLength);
 
 
-    float maxDist = 50.;
-    vec2 collision = raymarching( rayOrigin, rayDirection, maxDist, .01 );
+    vec3  rayDirection = getRay( camera, target, screenPos, fov );
 
+    vec2 collision = raymarching( camera, rayDirection, maxDistance, raymarchPrecision );
+
+    gl_FragColor = vec4( mix( color0, color1, sin( screenPos.y + 1.5 ) ) * 2., 1. );
     if ( collision.x > -0.5)
     {
 
         //"world" position
-        vec3 pos = rayOrigin + rayDirection * collision.x;
+        vec3 pos = camera + rayDirection * collision.x;
 
         //diffuse color
         vec3 col = vec3( .8,.8,.8 );
@@ -289,25 +287,13 @@ void main() {
         //normal vector
         vec3 nor = calcNormal( pos );
 
-        //reflection (Spherical Environment Mapping)
-        vec2 uv = nor.xy / 2. + .5;
-        vec3 tex = texture2D( map, uv ).rgb;
-        col += tex * .1;
+        vec3 lig0 = normalize( light0 );
+        vec3 lightColor0 =  max( 0.0, dot( lig0, nor) ) * color0;
 
-        vec3 lig0 = normalize( vec3(-0.5, 0.75, -0.5) );
-        vec3 light0 =  max( 0.0, dot( lig0, nor) ) * color0;
+        vec3 lightColor1 = max( 0.0, dot( normalize( light1 ), nor) ) * color1;
 
-        vec3 lig1 = normalize( vec3( 0.5, -0.75, 0.5) );
-        vec3 light1 = max( 0.0, dot( lig1, nor) ) * color1;
-
-        //AO : usually too strong
         float occ = calcAO( pos, nor );
-
-        //shadows ...?
-        //float sha = softshadow( pos, lig0, .025, 2.5, 2. );
-
-        float dep = ( ( collision.x + .5 ) / ( maxDist * .5 ) );
-        gl_FragColor = vec4( ( col + light0 + light1 ) * occ * dep, 1. );
+        gl_FragColor = vec4( ( col + lightColor0 + lightColor1 ) * occ * .8, 1. );
 
     }
 

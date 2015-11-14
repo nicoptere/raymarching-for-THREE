@@ -1,36 +1,28 @@
-var Composer = function()
-{
-    var undef;
-    var _composer = undef;
+var Composer = function(){
 
-    var renderer = undef;
-    var scene = undef;
-    var camera = undef;
-    var fxaa = undef;
+    function Composer( raymarching ){
 
-    function Composer( _renderer, _scene, _camera ){
+        this.renderer = raymarching.renderer;
+        this.scene = raymarching.scene;
+        this.camera = raymarching.renderCamera;
 
-        renderer = _renderer;
-        scene = _scene;
-        camera = _camera;
+        this.composer = new THREE.EffectComposer( this.renderer );
+        this.composer.addPass( new THREE.RenderPass( this.scene, this.camera ) );
 
-        _composer = new THREE.EffectComposer( renderer );
-        _composer.addPass( new THREE.RenderPass( scene, camera ) );
+        this.fxaa = new THREE.ShaderPass( THREE.FXAAShader );
+        this.fxaa.renderToScreen = true;
+        this.composer.addPass( this.fxaa );
 
-        fxaa = new THREE.ShaderPass( THREE.FXAAShader );
-        fxaa.renderToScreen = true;
-        _composer.addPass( fxaa );
+    }
 
+    function setSize(width, height) {
+        this.composer.setSize(width, height);
+        this.fxaa.uniforms.resolution.value.set( 1 / width, 1 / height );
     }
 
     function render()
     {
-        _composer.render();
-    }
-
-    function setSize(width, height) {
-        _composer.setSize(width, height);
-        fxaa.uniforms.resolution.value.set( 1 / width, 1 / height );
+        this.composer.render();
     }
 
     var _p = Composer.prototype;

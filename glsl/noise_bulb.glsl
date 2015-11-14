@@ -63,12 +63,28 @@ vec2 sphere( vec3 p, float radius, vec3 pos , vec4 quat)
     float d = length( ( p * transform )-pos ) - radius;
     return vec2(d,1);
 }
+vec2 sphere( vec3 p, float radius, vec3 pos )
+{
+    float d = length( ( p-pos) ) - radius;
+    return vec2(d,1);
+}
+vec2 sphere( vec3 p, float radius )
+{
+    float d = length( p ) - radius;
+    return vec2(d,1);
+}
+
 
 vec2 roundBox(vec3 p, vec3 size, float corner, vec3 pos, vec4 quat )
 {
     mat3 transform = rotationMatrix3( quat.xyz, quat.w );
     return vec2( length( max( abs( ( p-pos ) * transform )-size, 0.0 ) )-corner,1.);
 }
+vec2 roundBox(vec3 p, vec3 size, float corner, vec3 pos )
+{
+    return vec2( length( max( abs( p-pos )-size, 0.0 ) )-corner,1.);
+}
+
 
 vec2 torus( vec3 p, vec2 radii, vec3 pos, vec4 quat )
 {
@@ -92,6 +108,15 @@ vec2 cylinder( vec3 p, float h, float r, vec3 pos, vec4 quat ) {
     vec3 pp = (p - pos ) * transform;
     return vec2( max(length(pp.xz)-r, abs(pp.y)-h),1. );
 }
+vec2 cylinder( vec3 p, float h, float r, vec3 pos ) {
+    vec3 pp = (p - pos );
+    return vec2( max(length(pp.xz)-r, abs(pp.y)-h),1. );
+}
+vec2 cylinder( vec3 p, float h, float r ) {
+    return vec2( max(length(p.xz)-r, abs(p.y)-h),1. );
+}
+
+
 
 
 //operations
@@ -109,7 +134,9 @@ vec2 smin( vec2 a, vec2 b, float k ) { float h = clamp( 0.5+0.5*(b.x-a.x)/k, 0.0
 //http://www.pouet.net/topic.php?post=367360
 const vec3 pa = vec3(1., 57., 21.);
 const vec4 pb = vec4(0., 57., 21., 78.);
-float perlin(vec3 p) {
+float perlin(vec3 pos, vec4 quat ) {
+    mat3 transform = rotationMatrix3( quat.xyz, quat.w );
+    vec3 p = pos * transform;
 	vec3 i = floor(p);
 	vec4 a = dot( i, pa ) + pb;
 	vec3 f = cos((p-i)*acos(-1.))*(-.5)+.5;
@@ -117,6 +144,15 @@ float perlin(vec3 p) {
 	a.xy = mix(a.xz, a.yw, f.y);
 	return mix(a.x, a.y, f.z);
 }
+float perlin(vec3 p ) {
+	vec3 i = floor(p);
+	vec4 a = dot( i, pa ) + pb;
+	vec3 f = cos((p-i)*acos(-1.))*(-.5)+.5;
+	a = mix(sin(cos(a)*a),sin(cos(1.+a)*(1.+a)), f.x);
+	a.xy = mix(a.xz, a.yw, f.y);
+	return mix(a.x, a.y, f.z);
+}
+
 
 
 /////////////////////////////////////////////////////////////////////////
@@ -128,37 +164,24 @@ float perlin(vec3 p) {
 /////////////////////////////////////////////////////////////////////////
 
 
-const int steps = 50;
+const int steps = 80;
 const int shadowSteps = 4;
 const int ambienOcclusionSteps = 3;
 const float PI = 3.14159;
 vec2 field( vec3 position )
 {
 
-    //position
-    vec3 zero = vec3(0.);
+    vec2 sph = sphere( position, 5. );
 
-    //rotation
-    vec4 quat = vec4( 1., sin( time ) *.1 , 0., time * .2 );
+    vec3 nPos = position * .45;
+    nPos.y -= time * .05;
 
-    //noise
-    vec3 noise = position * .25;
-    //noise += time * .1;
-    float pnoise = 1. + perlin( noise );
+    vec4 quat = vec4( 0., 1., 0., -time * .1 );
+    vec2 noi = vec2( max( -.5, .5-abs( perlin( nPos, quat ) ) ), 0. );
 
-    //box
-    vec2 rb = roundBox( position, vec3(2.0,2.0,2.0),  0.5, zero, quat + vec4( 1., 1., 1., PI / 4. ) );
+    vec2 cyl = cylinder( position, 10.,4., vec3( 0.,-12.5,0.) );
 
-    //torus
-    vec2 to0 = torus( position, vec2( 4.0,.15), zero, vec4( 1., 0., 0., 0. + time * .2 ) );
-    vec2 to1 = torus( position, vec2( 4.0,.15), zero, vec4( 0., 0., 1., PI *.5 + time * .2 ) );
-
-    //spheres
-    vec2 sre = sphere( position, 3.0, zero, quat );
-    vec2 sce = sphere( position, 1., zero, quat ) + perlin( position + time ) * .25;
-
-    //composition
-    return smin( sce, smin( to0, smin( to1, subtract( sre, rb  ), pnoise ), pnoise ), pnoise);
+    return intersectionAB( smin( sph, cyl, .99 ), noi );
 
 }
 
@@ -210,41 +233,6 @@ vec3 calcNormal(vec3 pos) {
   return calcNormal(pos, 0.002);
 }
 
-
-//shadows & AO
-
-//https://www.shadertoy.com/view/Xds3zN
-
-float softshadow( in vec3 ro, in vec3 rd, in float mint, in float tmax, in float K )
-{
-	float res = 1.0;
-    float t = mint;
-    for( int i=0; i<shadowSteps; i++ )
-    {
-		float h = field( ro + rd*t ).x;
-        res = min( res, K * h/t );
-        t += clamp( h, 0.02, 0.10 );
-        if( h<0.001 || t>tmax ) break;
-    }
-    return clamp( res, 0.0, 1.0 );
-}
-
-float calcAO( in vec3 pos, in vec3 nor )
-{
-	float occ = 0.0;
-    float sca = 1.0;
-    for( int i=0; i<ambienOcclusionSteps; i++ )
-    {
-        float hr = 0.01 + 0.12*float(i)/float( ambienOcclusionSteps );
-        vec3 aopos =  nor * hr + pos;
-        float dd = field( aopos ).x;
-        occ += -(dd-hr)*sca;
-        sca *= 0.95;
-    }
-    return clamp( 1.0 - 3.0*occ, 0.0, 1.0 );
-}
-
-
 vec3 rimlight( vec3 pos, vec3 nor )
 {
     vec3 v = normalize(-pos);
@@ -257,58 +245,47 @@ vec3 rimlight( vec3 pos, vec3 nor )
 void main() {
 
 
-    vec3 color0 = vec3(0.9, 0.9, 0.0);    //yellow
-    vec3 color1 = vec3(0.0, 0.2, 0.9);    //blue
-
-    //default color ( background )
-    vec2 xy = gl_FragCoord.xy / resolution;
-    gl_FragColor = vec4( mix( color0, color1, sin( xy.y + 0.5 ) ) * 2., 1. );
-
-    float cameraAngle   = 0.;//0.8 * time;
-    float cameraRadius  = 20.;
-
-    vec2  screenPos    = squareFrame( resolution );
-    float lensLength   = 2.5;
-    vec3  rayOrigin    = vec3( cameraRadius * sin(cameraAngle), 0., cameraRadius * cos(cameraAngle));
-    vec3  rayTarget    = vec3(0, 0, 0);
-    vec3  rayDirection = getRay(rayOrigin, rayTarget, screenPos, lensLength);
+        vec3 color = vec3( 0.4, 0.8, 0.99 );    //blue
+       vec2  screenPos    = squareFrame( resolution );
+       float col = pow( max( 0., 1.- length( screenPos - vec2( 0.,.35 ) ) ), 1.5 );
+       gl_FragColor = vec4( vec3( col ), 1. );
 
 
-    float maxDist = 50.;
-    vec2 collision = raymarching( rayOrigin, rayDirection, maxDist, .01 );
+       float cameraAngle   = 0.2 * time;
+       float cameraRadius  = 20.+sin( time*.1);
 
-    if ( collision.x > -0.5)
-    {
+       float lensLength   = 2.5;
+       float y = cameraRadius * .38 + ( cameraRadius * .32 * sin(cameraAngle) );
+       vec3  rayOrigin    = vec3( cameraRadius * sin(cameraAngle), y, cameraRadius * cos(cameraAngle));
+       vec3  rayTarget    = vec3(0, 0, 0);
+       vec3  rayDirection = getRay(rayOrigin, rayTarget, screenPos, lensLength);
 
-        //"world" position
-        vec3 pos = rayOrigin + rayDirection * collision.x;
 
-        //diffuse color
-        vec3 col = vec3( .8,.8,.8 );
+       float maxDist = 50.;
+       vec2 collision = raymarching( rayOrigin, rayDirection, maxDist, .01 );
 
-        //normal vector
-        vec3 nor = calcNormal( pos );
+       if ( collision.x > -0.5)
+       {
 
-        //reflection (Spherical Environment Mapping)
-        vec2 uv = nor.xy / 2. + .5;
-        vec3 tex = texture2D( map, uv ).rgb;
-        col += tex * .1;
+           //"world" position
+           vec3 pos = rayOrigin + rayDirection * collision.x;
 
-        vec3 lig0 = normalize( vec3(-0.5, 0.75, -0.5) );
-        vec3 light0 =  max( 0.0, dot( lig0, nor) ) * color0;
+           //diffuse color
+           vec3 col = vec3( .8 );
 
-        vec3 lig1 = normalize( vec3( 0.5, -0.75, 0.5) );
-        vec3 light1 = max( 0.0, dot( lig1, nor) ) * color1;
+           //normal vector
+           vec3 nor = calcNormal( pos );
 
-        //AO : usually too strong
-        float occ = calcAO( pos, nor );
+           vec3 lig1 = normalize( vec3( 0.0, 5.0, -0.0) );
+           vec3 light1 = max( 0.0, dot( lig1, nor) ) * color;
 
-        //shadows ...?
-        //float sha = softshadow( pos, lig0, .025, 2.5, 2. );
+           vec3 rim1 = rimlight( pos, -lig1 );
+           vec3 rim2 = rimlight( lig1, -nor ) * .25;
 
-        float dep = ( ( collision.x + .5 ) / ( maxDist * .5 ) );
-        gl_FragColor = vec4( ( col + light0 + light1 ) * occ * dep, 1. );
+           float dep = ( ( collision.x + .5 ) / ( maxDist * .5 ) );
+           gl_FragColor = vec4( ( col + rim2 + light1 * rim1  ) - rim1 * dep, 1. );
 
-    }
+       }
+
 
 }

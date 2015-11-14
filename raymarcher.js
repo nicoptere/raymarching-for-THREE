@@ -1,6 +1,9 @@
 var RayMarcher = function(){
 
-    function RayMarcher( fragmentUrl ){
+    var tl = new THREE.TextureLoader();
+    var rc = new THREE.Raycaster();
+    var mouse = new THREE.Vector2();
+    function RayMarcher(){
 
         //scene setup
 
@@ -10,64 +13,141 @@ var RayMarcher = function(){
         this.renderer.setSize( window.innerWidth, window.innerHeight );
         this.domElement = this.renderer.domElement;
 
-        this.camera = new THREE.OrthographicCamera(-1,1,1,-1,1/Math.pow( 2, 53 ),1);
+        //used only to render the scene
+
+        this.renderCamera = new THREE.OrthographicCamera(-1,1,1,-1,1/Math.pow( 2, 53 ),1);
 
         //geometry setup
 
-        var geom = new THREE.BufferGeometry();
-        geom.addAttribute( 'position', new THREE.BufferAttribute( new Float32Array([   -1,-1,0, 1,-1,0, 1,1,0, -1, -1, 0, 1, 1, 0, -1, 1, 0]), 3 ) );
-        this.mesh = new THREE.Mesh( geom, null );
-
+        this.geom = new THREE.BufferGeometry();
+        this.geom.addAttribute( 'position', new THREE.BufferAttribute( new Float32Array([   -1,-1,0, 1,-1,0, 1,1,0, -1, -1, 0, 1, 1, 0, -1, 1, 0]), 3 ) );
+        this.mesh = new THREE.Mesh( this.geom, null );
         this.scene.add( this.mesh );
 
+        //some helpers
 
-        //load the fragment shader
+        this.camera = new THREE.PerspectiveCamera( 36, 1, 0.1,1 );
+        this.target = new THREE.Vector3();
 
+        return this;
+
+    }
+
+    function loadFragmentShader( fragmentUrl, callback )
+    {
         this.loaded = false;
+
         var scope = this;
         var req = new XMLHttpRequest();
         req.open( "GET", fragmentUrl );
         req.onload = function (e) {
-            scope.setFragmentShader(e.target.responseText );
+            scope.setFragmentShader( e.target.responseText, callback );
         };
         req.send();
-
+        return this;
     }
 
-    function setFragmentShader( fs ){
-
-        var scope = this;
-
-        var tl = new THREE.TextureLoader();
-        tl.load( "img/matcap.png", function(texture){
-            scope.material.uniforms.map.value = texture;
-            texture.needsUpdate = true;
-        });
+    function setFragmentShader( fs, cb ){
 
         this.startTime = Date.now();
-        this.material = new THREE.ShaderMaterial({
+        this.mesh.material = this.material = new THREE.ShaderMaterial({
 
             uniforms :{
-                resolution:{ type:"v2", value:new THREE.Vector2( window.innerWidth, window.innerHeight ) },
+                resolution:{ type:"v2", value:new THREE.Vector2( this.width, this.height ) },
                 time:{ type:"f", value:0 },
-                map:{ type:"t", value:null  }
+                fov:{ type:"f", value:45 },
+                maxDistance:{ type:"f", value:50 },
+                raymarchPrecision:{ type:"f", value:0.01},
+                camera:{ type:"v3", value:this.camera.position },
+                target:{ type:"v3", value:this.target }
+
             },
             vertexShader : "void main() {gl_Position = vec4( position, 1.0 );}",
             fragmentShader : fs
         });
-        this.mesh.material = this.material;
         this.update();
+
         this.loaded = true;
+        if( cb != null )cb( this );
+        return this;
+    }
+
+    function setTexture( name, url ){
+
+        if( this.material == null )
+        {
+            throw new Error("material not initialised, use setFragmentShader() first.");
+        }
+
+        var scope = this;
+        this.material.uniforms[ name ] = {type:'t', value:null };
+        tl.load( url, function(texture){
+
+            scope.material.uniforms[ name ].value = texture;
+            scope.material.needsUpdate = true;
+            texture.needsUpdate = true;
+
+        });
+        return this;
+    }
+
+    function setUniform( name, type, value ){
+
+        if( this.material == null )
+        {
+            throw new Error("material not initialised, use setFragmentShader() first.");
+        }
+
+        this.material.uniforms[ name ] = {type:type, value:value };
+        return this;
+    }
+
+    function getUniform( name ){
+
+
+        if( this.material == null )
+        {
+            console.warn("material not initialised, use setFragmentShader() first.");
+            return null;
+        }
+
+        return this.material.uniforms[name];
 
     }
 
+    function setSize( width, height ){
+
+        this.width = width;
+        this.height = height;
+
+        this.renderer.setSize( width, height );
+
+        this.camera.aspect = width / height;
+        this.camera.updateProjectionMatrix();
+
+        if( this.material != null )
+        {
+            this.material.uniforms.resolution.value.x = width;
+            this.material.uniforms.resolution.value.y = height;
+        }
+        return this;
+    }
 
     function update(){
 
-        this.renderer.setSize( window.innerWidth, window.innerHeight );
-        this.material.uniforms.resolution.value.x = window.innerWidth;
-        this.material.uniforms.resolution.value.y = window.innerHeight;
         this.material.uniforms.time.value = ( Date.now() - this.startTime ) * .001;
+
+        this.material.uniforms.fov.value = this.camera.fov * Math.PI / 180;
+
+        this.material.uniforms.maxDistance.value = this.camera.position.length() * 2;
+
+        this.material.uniforms.raymarchPrecision.value = .01;
+
+        this.material.uniforms.camera.value = this.camera.position;
+
+        this.material.uniforms.target.value = this.target;
+        this.camera.lookAt( this.target );
+
     }
 
     function render(){
@@ -75,13 +155,19 @@ var RayMarcher = function(){
         if( this.loaded )
         {
             this.update();
-            this.renderer.render( this.scene, this.camera );
+            this.renderer.render( this.scene, this.renderCamera );
         }
     }
 
     var _p = RayMarcher.prototype;
     _p.constructor = RayMarcher;
+
+    _p.loadFragmentShader = loadFragmentShader;
     _p.setFragmentShader = setFragmentShader;
+    _p.setTexture = setTexture;
+    _p.setUniform = setUniform;
+    _p.getUniform = getUniform;
+    _p.setSize = setSize;
     _p.update = update;
     _p.render = render;
 

@@ -27,9 +27,9 @@
 <script src="vendor/shaders/CopyShader.js"></script>
 <script src="vendor/shaders/FXAAShader.js"></script>
 
-<script src="raymarcher.js"></script>
 <script src="composer.js"></script>
 
+<script src="raymarcher.js"></script>
 <script>
 
     var rm;
@@ -52,14 +52,12 @@
 
         requestAnimationFrame( animate );
         rm.render();
-//        if(rm.loaded ) composer.render();
+        if( rm.loaded )composer.render()
 
     }
 
     init();
     animate();
-
-
 
 </script>
 

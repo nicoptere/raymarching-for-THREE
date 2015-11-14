@@ -10,6 +10,37 @@ I've just left a small subset of the post processing & shaders folder for the sa
 <br>
 I've left the links to the resources I used in the [fragment file](https://github.com/nicoptere/raymarching-for-THREE/blob/master/glsl/fragment.glsl), most of the changes should be done in the "field()" method after the [HAMMER TIME!](https://github.com/nicoptere/raymarching-for-THREE/blob/master/glsl/fragment.glsl#L126)
 
+a sample script would look like
+
+    <script src="three.min.js"></script>
+    <script src="raymarcher.js"></script>
+    <script>
+
+        var rm;
+        var composer;
+        function init() {
+
+            var w = window.innerWidth;
+            var h = window.innerHeight;
+
+            rm = new RayMarcher().setSize( w,h ).loadFragmentShader( "glsl/noise_bulb.glsl" );
+            document.body.appendChild( rm.domElement );
+
+        }
+
+        function animate() {
+
+
+            requestAnimationFrame( animate );
+            rm.render();
+
+        }
+
+        init();
+        animate();
+
+    </script>
+
 <hr>
 helpful links:<br>
 

@@ -74,7 +74,7 @@ if you want to use the effectComposer :
         }
 
         function animate() {
-    
+
             requestAnimationFrame( animate );
             rm.render();
             if( rm.loaded )composer.render();

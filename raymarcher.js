@@ -26,7 +26,7 @@ var RayMarcher = function(){
 
         //some helpers
 
-        this.camera = new THREE.PerspectiveCamera( 36, 1, 0.1,1 );
+        this.camera = new THREE.PerspectiveCamera( 60, 1, 0.1,1 );
         this.target = new THREE.Vector3();
 
         return this;

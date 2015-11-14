@@ -10,8 +10,6 @@ I've just left a small subset of the post processing & shaders folder for the sa
 <br>
 I've left the links to the resources I used in the [fragment file](https://github.com/nicoptere/raymarching-for-THREE/blob/master/glsl/fragment.glsl), most of the changes should be done in the "field()" method after the [HAMMER TIME!](https://github.com/nicoptere/raymarching-for-THREE/blob/master/glsl/fragment.glsl#L126)
 
-![noise bulb](https://cdn.rawgit.com/nicoptere/raymarching-for-THREE/master/img/noise_bulb.jpg)<br>
-[noise bulb demo](https://rawgit.com/nicoptere/raymarching-for-THREE/master/noise_bulb.html)<br>
 <hr>
 helpful links:<br>
 
@@ -24,3 +22,8 @@ very interesting series of articles about distance estimators & fractals:
 * [Distance Estimated 3D Fractals (II): Lighting and Coloring](http://blog.hvidtfeldts.net/index.php/2011/08/distance-estimated-3d-fractals-ii-lighting-and-coloring/)
 
 
+[the blinn-phong lighting model](https://en.wikipedia.org/wiki/Blinn%E2%80%93Phong_shading_model)
+
+<hr>
+![noise bulb](https://cdn.rawgit.com/nicoptere/raymarching-for-THREE/master/img/noise_bulb.jpg)<br>
+[noise bulb demo](https://rawgit.com/nicoptere/raymarching-for-THREE/master/noise_bulb.html)<br>

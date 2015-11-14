@@ -72,7 +72,7 @@ vec2 sphere( vec3 p, float radius, vec3 pos , vec4 quat)
 {
     mat3 transform = rotationMatrix3( quat.xyz, quat.w );
     float d = length( ( p * transform )-pos ) - radius;
-    return vec2(d,1);
+    return vec2(d,0.);
 }
 
 vec2 roundBox(vec3 p, vec3 size, float corner, vec3 pos, vec4 quat )
@@ -282,7 +282,7 @@ void main() {
         vec3 pos = camera + rayDirection * collision.x;
 
         //diffuse color
-        vec3 col = vec3( .8,.8,.8 );
+        vec3 col = vec3( .8,.8,.8 ) * collision.y;
 
         //normal vector
         vec3 nor = calcNormal( pos );

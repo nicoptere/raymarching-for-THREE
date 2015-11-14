@@ -23,11 +23,14 @@ a sample script would look like
 
             rm = new RayMarcher().setSize( w,h ).loadFragmentShader( "glsl/noise_bulb.glsl" );
             document.body.appendChild( rm.domElement );
+
         }
 
         function animate() {
+
             requestAnimationFrame( animate );
             rm.render();
+
         }
         init();
         animate();
@@ -37,7 +40,51 @@ should give you something like this:
 ![noise bulb](https://cdn.rawgit.com/nicoptere/raymarching-for-THREE/master/img/noise_bulb.jpg)<br>
 [noise bulb demo](https://rawgit.com/nicoptere/raymarching-for-THREE/master/noise_bulb.html)<br>
 
+if you want to use the effectComposer :
+    <script src="vendor/three.min.js"></script>
+    <script src="raymarcher.js"></script>
 
+    <!-- import the postprocessing / shaders you need /-->
+    <script src="vendor/postprocessing/EffectComposer.js"></script>
+    <script src="vendor/postprocessing/RenderPass.js"></script>
+    <script src="vendor/postprocessing/ShaderPass.js"></script>
+    <script src="vendor/postprocessing/MaskPass.js"></script>
+    <script src="vendor/shaders/CopyShader.js"></script>
+    <script src="vendor/shaders/FXAAShader.js"></script>
+
+    <!-- alter the composer class to perform what you want /-->
+    <script src="composer.js"></script>
+
+    <script>
+
+        var rm;
+        var composer;
+        function init() {
+
+
+            var w = window.innerWidth;
+            var h = window.innerHeight;
+
+            rm = new RayMarcher().setSize( w,h ).loadFragmentShader( "glsl/noise_bulb.glsl" );
+            document.body.appendChild( rm.domElement );
+
+            composer = new Composer( rm );
+            composer.setSize( w,h );
+
+        }
+
+        function animate() {
+    
+            requestAnimationFrame( animate );
+            rm.render();
+            if( rm.loaded )composer.render();
+
+        }
+
+        init();
+        animate();
+
+    </script>
 
 <hr>
 helpful links:<br>

@@ -20,7 +20,7 @@ a sample script would look like
 
             var w = window.innerWidth;
             var h = window.innerHeight;
-            
+
             rm = new RayMarcher().setSize( w,h ).loadFragmentShader( "glsl/noise_bulb.glsl" );
             document.body.appendChild( rm.domElement );
         }
@@ -32,6 +32,12 @@ a sample script would look like
         init();
         animate();
     </script>
+
+should give you something like this:
+![noise bulb](https://cdn.rawgit.com/nicoptere/raymarching-for-THREE/master/img/noise_bulb.jpg)<br>
+[noise bulb demo](https://rawgit.com/nicoptere/raymarching-for-THREE/master/noise_bulb.html)<br>
+
+
 
 <hr>
 helpful links:<br>
@@ -48,5 +54,3 @@ very interesting series of articles about distance estimators & fractals:
 [the blinn-phong lighting model](https://en.wikipedia.org/wiki/Blinn%E2%80%93Phong_shading_model)
 
 <hr>
-![noise bulb](https://cdn.rawgit.com/nicoptere/raymarching-for-THREE/master/img/noise_bulb.jpg)<br>
-[noise bulb demo](https://rawgit.com/nicoptere/raymarching-for-THREE/master/noise_bulb.html)<br>

@@ -40,7 +40,41 @@ should give you something like this:
 ![noise bulb](https://cdn.rawgit.com/nicoptere/raymarching-for-THREE/master/img/noise_bulb.jpg)<br>
 [noise bulb demo](https://rawgit.com/nicoptere/raymarching-for-THREE/master/noise_bulb.html)<br>
 
+for the sake of exhibiting the beauty of Raymarching, the above shape is produced by this distance estimator:
+
+    vec2 field( vec3 position ){
+
+        //create a 5 units radius sphere
+        vec2 sph = sphere( position, 5. );
+
+        //create a 10 units high, 4 units radius cylinder and positions it at -12.5 units
+        vec2 cyl = cylinder( position, 10.,4., vec3( 0.,-12.5,0.) );
+
+        //stores a copy of the position being evaluated
+        vec3 nPos = position * .45;
+
+        //adds some delta
+        nPos.y -= time * .05;
+
+        //creates a transform (time-based rotation about the Y axis)
+        vec4 quat = vec4( 0., 1., 0., -time * .1 );
+
+        //evaluates a noise field using the transform above (the noise field "rotates")
+        vec2 noi = vec2( max( -.5, .5-abs( perlin( nPos, quat ) ) ), 0. );
+
+
+        //combines the shapes:
+        // 1 - blends the sphere and the cylinder
+        // 2 - return s the intersection of the blended shapes with the noise field
+        return intersectionAB( smin( sph, cyl, .99 ), noi );
+
+    }
+
+then some colors are being computed with result of this evaluation.
+
 if you want to use the effectComposer :
+
+    <!-- import three and the raymarcher /-->
     <script src="vendor/three.min.js"></script>
     <script src="raymarcher.js"></script>
 

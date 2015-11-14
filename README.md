@@ -40,7 +40,7 @@ should give you something like this:
 ![noise bulb](https://cdn.rawgit.com/nicoptere/raymarching-for-THREE/master/img/noise_bulb.jpg)<br>
 [noise bulb demo](https://rawgit.com/nicoptere/raymarching-for-THREE/master/noise_bulb.html)<br>
 
-for the sake of exhibiting the beauty of Raymarching, the above shape is produced by this distance estimator:
+for the sake of exhibiting the beauty of Raymarching, the above shape is produced by [this distance estimator](https://github.com/nicoptere/raymarching-for-THREE/blob/master/glsl/noise_bulb.glsl#L171-L186):
 
     vec2 field( vec3 position ){
 

@@ -282,7 +282,7 @@ void main() {
         vec3 pos = camera + rayDirection * collision.x;
 
         //diffuse color
-        vec3 col = vec3( .8,.8,.8 ) * collision.y;
+        vec3 col = vec3( .8,.8,.8 );
 
         //normal vector
         vec3 nor = calcNormal( pos );

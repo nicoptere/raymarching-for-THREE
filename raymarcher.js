@@ -97,7 +97,6 @@ var RayMarcher = function(){
         {
             throw new Error("material not initialised, use setFragmentShader() first.");
         }
-
         this.material.uniforms[ name ] = {type:type, value:value };
         return this;
     }
@@ -107,7 +106,7 @@ var RayMarcher = function(){
 
         if( this.material == null )
         {
-            console.warn("material not initialised, use setFragmentShader() first.");
+            console.warn("raymarcher.getUniform: material not initialised, use setFragmentShader() first.");
             return null;
         }
 

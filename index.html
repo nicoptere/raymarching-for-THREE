@@ -18,7 +18,7 @@
 </head>
 <body>
 <script src="vendor/three.min.js"></script>
-
+<!--
 <script src="vendor/postprocessing/EffectComposer.js"></script>
 <script src="vendor/postprocessing/RenderPass.js"></script>
 <script src="vendor/postprocessing/ShaderPass.js"></script>
@@ -26,12 +26,13 @@
 
 <script src="vendor/shaders/CopyShader.js"></script>
 <script src="vendor/shaders/FXAAShader.js"></script>
+/-->
 
+<!--<script src="MouseControls.js"></script>-->
 <script src="vendor/controls/OrbitControls.js"></script>
 
 <script src="raymarcher.js"></script>
 <script src="composer.js"></script>
-<script src="MouseControls.js"></script>
 
 <script>
 
@@ -40,13 +41,13 @@
     function init() {
 
         rm = new RayMarcher();
-        rm.loadFragmentShader("glsl/update.glsl", onFragmentLoaded );
+        rm.loadFragmentShader("glsl/interactive.glsl", onFragmentLoaded );
 
         new THREE.OrbitControls( rm.camera );
 
         rm.camera.position.z = 8;
 
-        //composer = new Composer( rm );
+//        composer = new Composer( rm );
 
         document.body.appendChild( rm.domElement );
         window.addEventListener( "resize", onResize, false );
@@ -75,13 +76,15 @@
 
         requestAnimationFrame( animate );
 
-        rm.target.y = 2 * ( Math.sin( Date.now() * 0.001 ) * .5 );
-
-        var l1 = rm.getUniform( "light1" );
-        if( l1 != null )
-        {
-            rm.getUniform( "light1" ).value.x = 20 * ( Math.cos( Date.now() * 0.001 ) );
-            rm.getUniform( "light1" ).value.z = 20 * ( Math.sin( Date.now() * 0.001 ) );
+        if( rm.loaded ){
+            
+            rm.target.y = 2 * ( Math.sin( Date.now() * 0.001 ) * .5 );
+            var l1 = rm.getUniform( "light1" );
+            if( l1 != null )
+            {
+                rm.getUniform( "light1" ).value.x = 20 * ( Math.cos( Date.now() * 0.001 ) );
+                rm.getUniform( "light1" ).value.z = 20 * ( Math.sin( Date.now() * 0.001 ) );
+            }
         }
 
         rm.render();

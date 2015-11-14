@@ -47,7 +47,7 @@ for the sake of exhibiting the beauty of Raymarching, the above shape is produce
         //create a 5 units radius sphere
         vec2 sph = sphere( position, 5. );
 
-        //create a 10 units high, 4 units radius cylinder and positions it at -12.5 units
+        //create a 10 units high, 4 units radius cylinder and positions it at Y = -12.5 units
         vec2 cyl = cylinder( position, 10.,4., vec3( 0.,-12.5,0.) );
 
         //stores a copy of the position being evaluated
@@ -62,7 +62,6 @@ for the sake of exhibiting the beauty of Raymarching, the above shape is produce
         //evaluates a noise field using the transform above (the noise field "rotates")
         vec2 noi = vec2( max( -.5, .5-abs( perlin( nPos, quat ) ) ), 0. );
 
-
         //combines the shapes:
         // 1 - blends the sphere and the cylinder
         // 2 - return s the intersection of the blended shapes with the noise field
@@ -70,7 +69,7 @@ for the sake of exhibiting the beauty of Raymarching, the above shape is produce
 
     }
 
-then some colors are being computed with result of this evaluation.
+then some [colors are being computed](https://github.com/nicoptere/raymarching-for-THREE/blob/master/glsl/noise_bulb.glsl#L270-L286) with the result of this evaluation.
 
 if you want to use the effectComposer :
 

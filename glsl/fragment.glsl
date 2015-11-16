@@ -118,7 +118,6 @@ float perlin(vec3 p) {
 	return mix(a.x, a.y, f.z);
 }
 
-
 /////////////////////////////////////////////////////////////////////////
 
 // STOP ! ! !
@@ -134,6 +133,7 @@ const int ambienOcclusionSteps = 3;
 const float PI = 3.14159;
 vec2 field( vec3 position )
 {
+
 
     //position
     vec3 zero = vec3(0.);

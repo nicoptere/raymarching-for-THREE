@@ -1,7 +1,7 @@
 
 // Camera function by TekF
 // Compute ray from camera parameters
-vec3 GetRay(vec3 dir, vec2 pos)
+vec3 getRay(vec3 dir, vec2 pos)
 {
    pos = pos - 0.5;
    pos.x *= resolution.x/resolution.y;
@@ -12,6 +12,10 @@ vec3 GetRay(vec3 dir, vec2 pos)
 
    return dir + right*pos.x + up*pos.y;
 }
+
+vec2 p = gl_FragCoord.xy / resolution.xy;
+vec3 ro = camera;
+vec3 rd = normalize( getRay( target-camera, p ) );
 
 vec2 city( vec3 p )
 {

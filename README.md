@@ -3,7 +3,7 @@
 <br/>
 a "helper" to work with raymarching in THREE.js.
 * [basic demo](https://rawgit.com/nicoptere/raymarching-for-THREE/master/index.html)<br>
-* [interactive demo](https://rawgit.com/nicoptere/raymarching-for-THREE/master/interactive.html) adds mouse controls<br>
+* [interactive demo](https://rawgit.com/nicoptere/raymarching-for-THREE/master/interactive.html) (mouse controls)<br>
 
 it is heavily based on http://stack.gl/ core modules & scripts<br>
 <br>

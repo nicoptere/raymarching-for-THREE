@@ -129,8 +129,6 @@ float perlin(vec3 p) {
 	return mix(a.x, a.y, f.z);
 }
 
-
-
 /////////////////////////////////////////////////////////////////////////
 
 // STOP ! ! !
@@ -147,8 +145,7 @@ const int ambienOcclusionSteps = 3;
 const float PI = 3.14159;
 vec2 field( vec3 position )
 {
-
-    //position
+   //position
     vec3 zero = vec3(0.);
 
     //rotation
@@ -172,6 +169,7 @@ vec2 field( vec3 position )
 
     //composition
     return smin( sce, smin( to0, smin( to1, subtract( sre, rb  ), pnoise ), pnoise ), pnoise);
+
 }
 
 /////////////////////////////////////////////////////////////////////////
@@ -202,6 +200,7 @@ vec2 raymarching( vec3 rayOrigin, vec3 rayDir, float maxd, float precis ) {
 
     if (dist < maxd) { res = vec2(dist, type); }
     return res;
+
 }
 
 //https://github.com/stackgl/glsl-sdf-normal
@@ -294,7 +293,7 @@ void main() {
         vec3 lightColor1 = max( 0.0, dot( normalize( light1 ), nor) ) * color1;
 
         float occ = calcAO( pos, nor );
-        gl_FragColor = vec4( ( col + lightColor0 + lightColor1 ) * occ * .8, 1. );
+        gl_FragColor = vec4( ( col + lightColor0 + lightColor1 ) * occ * .8, .1 );
 
     }
 

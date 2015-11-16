@@ -13,7 +13,7 @@ I've just left a small subset of the post processing & shaders folder for the sa
 <br>
 I've left the links to the resources I used in the [fragment file](https://github.com/nicoptere/raymarching-for-THREE/blob/master/glsl/fragment.glsl), most of the changes should be done in the "field()" method after the [HAMMER TIME!](https://github.com/nicoptere/raymarching-for-THREE/blob/master/glsl/fragment.glsl#L126)
 
-a sample script would look like
+# sample script
 
     <script src="three.min.js"></script>
     <script src="raymarcher.js"></script>
@@ -124,7 +124,10 @@ if you want to use the effectComposer :
 
 <hr>
 
-to assign different colors to the different parts of the shape you can do somethign like:
+
+# differents colors:
+![colors](https://cdn.rawgit.com/nicoptere/raymarching-for-THREE/master/img/colors.png)
+to assign different colors to the different parts of the shape you can do somethign like:<br>
 
     //shape composition
     float blend = .5 + sin( time * .5 ) * .5;
@@ -148,8 +151,8 @@ to assign different colors to the different parts of the shape you can do someth
 
     return _out;
 
-
-see [the source shader for]() 
+check out the [live demo for the color selection](https://rawgit.com/nicoptere/raymarching-for-THREE/master/colors.html)<br>
+see [the source shader](https://github.com/nicoptere/raymarching-for-THREE/blob/master/glsl/colors.glsl#L161-L181) for the code.<br>
 
 
 tips & things I've learnt

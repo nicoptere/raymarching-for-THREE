@@ -1,3 +1,6 @@
+
+//requires glsl/bits/util/rotation.glsl
+
 vec2 torus( vec3 p, vec2 radii, vec3 pos, vec4 quat )
 {
     vec3 pp = ( p - pos ) * rotationMatrix3( quat.xyz, quat.w );

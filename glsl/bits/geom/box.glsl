@@ -1,4 +1,6 @@
 
+//requires glsl/bits/util/rotation.glsl
+
 vec2 box(vec3 p, vec3 size, float corner, vec3 pos, vec4 quat )
 {
     return vec2( length( max( abs( ( p-pos ) * rotationMatrix3( quat.xyz, quat.w ) )-size, 0.0 ) )-corner,1.);

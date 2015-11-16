@@ -183,7 +183,9 @@ vec2 field( vec3 position )
     vec2 sce = sphere( position, 1., zero, quat ) + perlin( position + time ) * .25;
 
     //composition
+
     return smin( sce, smin( to0, smin( to1, subtract( sre, rb  ), pnoise ), pnoise ), pnoise);
+
 }
 
 /////////////////////////////////////////////////////////////////////////
@@ -196,11 +198,13 @@ vec2 field( vec3 position )
 //the actual raymarching from:
 //https://github.com/stackgl/glsl-raytrace/blob/master/index.glsl
 
-vec2 raymarching( vec3 rayOrigin, vec3 rayDir, float maxd, float precis ) {
+vec3 raymarching( vec3 rayOrigin, vec3 rayDir, float maxd, float precis ) {
 
     float latest = precis * 2.0;
     float dist   = 0.0;
     float type   = -1.0;
+    float count   = 1.;
+    vec3  res    = vec3(-1.0, -1.0, -1. );
     for (int i = 0; i < raymarchSteps; i++) {
 
         if (latest < precis || dist > maxd) break;
@@ -210,10 +214,10 @@ vec2 raymarching( vec3 rayOrigin, vec3 rayDir, float maxd, float precis ) {
         dist  += latest;
 
         type = result.y;
+        count  += 1.;
     }
 
-    vec2 res    = vec2(-1.0, -1.0 );
-    if (dist < maxd) { res = vec2( dist, type ); }
+    if (dist < maxd) { res = vec3(dist, type, count); }
     return res;
 
 }
@@ -286,7 +290,7 @@ void main() {
 
     vec3  rayDirection = getRay( camera, target, screenPos, fov );
 
-    vec2 collision = raymarching( camera, rayDirection, 100., .001 );
+    vec3 collision = raymarching( camera, rayDirection, 100., .001 );
 
     gl_FragColor = vec4( mix( color0, color1, sin( screenPos.y + 1.5 ) ) * 2., 1. );
     if ( collision.x > -0.5)
@@ -296,7 +300,7 @@ void main() {
         vec3 pos = camera + rayDirection * collision.x;
 
         //diffuse color
-        vec3 col = vec3( collision.y );
+        vec3 col = vec3( .8,.8,.8 );
 
         //normal vector
         vec3 nor = calcNormal( pos );
@@ -306,9 +310,9 @@ void main() {
 
         vec3 lightColor1 = max( 0.0, dot( normalize( light1 ), nor) ) * color1;
 
-        float depth = 1./ log( collision.x );
+        float occ = pow( 1./ ( collision.z ),0.10 );
 
-        gl_FragColor = vec4( ( col + lightColor0 + lightColor1 ) * depth, 1. );
+        gl_FragColor = vec4( ( col + lightColor0 + lightColor1 ) * occ * .8, .1 );
 
     }
 

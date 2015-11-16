@@ -1,4 +1,6 @@
 
+//requires glsl/bits/util/rotation.glsl
+
 vec2 sphere( vec3 p, float radius, vec3 pos, vec4 quat)
 {
     return vec2(length( ( p-pos ) * rotationMatrix3( quat.xyz, quat.w ) ) - radius,1);

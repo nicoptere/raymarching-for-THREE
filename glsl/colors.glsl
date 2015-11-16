@@ -89,21 +89,6 @@ vec2 torus( vec3 p, vec2 radii, vec3 pos, vec4 quat )
     return vec2(d,1.);
 }
 
-vec2 cone( vec3 p, vec2 c, vec3 pos, vec4 quat  )
-{
-    mat3 transform = rotationMatrix3( quat.xyz, quat.w );
-    vec3 pp = ( p - pos ) * transform;
-    float q = length(pp.xy);
-    return vec2( dot(c,vec2(q,pp.z)), 1. );
-}
-
-//http://www.pouet.net/topic.php?post=365312
-vec2 cylinder( vec3 p, float h, float r, vec3 pos, vec4 quat ) {
-    mat3 transform = rotationMatrix3( quat.xyz, quat.w );
-    vec3 pp = (p - pos ) * transform;
-    return vec2( max(length(pp.xz)-r, abs(pp.y)-h),1. );
-}
-
 
 //operations
 
@@ -111,6 +96,7 @@ vec2 unionAB(vec2 a, vec2 b){return vec2(min(a.x, b.x),1.);}
 vec2 intersectionAB(vec2 a, vec2 b){return vec2(max(a.x, b.x),1.);}
 vec2 blendAB( vec2 a, vec2 b, float t ){ return vec2(mix(a.x, b.x, t ),1.);}
 vec2 subtract(vec2 a, vec2 b){ return vec2(max(-a.x, b.x),1.); }
+
 //http://iquilezles.org/www/articles/smin/smin.htm
 vec2 smin( vec2 a, vec2 b, float k ) { float h = clamp( 0.5+0.5*(b.x-a.x)/k, 0.0, 1.0 ); return vec2( mix( b.x, a.x, h ) - k*h*(1.0-h), 1. ); }
 
@@ -125,14 +111,11 @@ vec3 twist( vec3 pos, float amount )
     vec3  q = vec3(m*pos.xz,pos.y);
     return q;
 }
-vec3 repeat( vec3 p, vec3 r )
-{
-    return mod( p, r ) - .5 * r;
-}
 
 //http://www.pouet.net/topic.php?post=367360
-const vec3 pa = vec3(1., 57., 21.);
-const vec4 pb = vec4(0., 57., 21., 78.);
+
+#define pa vec3(1., 57., 21.)
+#define pb vec4(0., 57., 21., 78.)
 float perlin(vec3 p) {
 	vec3 i = floor(p);
 	vec4 a = dot( i, pa ) + pb;
@@ -150,40 +133,46 @@ float perlin(vec3 p) {
 
 /////////////////////////////////////////////////////////////////////////
 
-
 const int raymarchSteps = 50;
-
-const int shadowSteps = 4;
-const int ambienOcclusionSteps = 3;
-const float PI = 3.14159;
+#define PI 3.14159
 vec2 field( vec3 position )
 {
-    //repetition
-    vec3 r = vec3(9.,0.,9.);
+
    //position
     vec3 zero = vec3(0.);
 
     //rotation
-    vec4 quat = vec4( 1., sin( time ) *.1 , 0., time * .2 );
+    vec4 quat = vec4( 1., 0.,0.,0. );
 
-    //noise
-    vec3 noise = position * .25;
-    //noise += time * .1;
-    float pnoise = 1. + perlin( noise );
+    //
+    position = twist( position, sin( time ) * .5 );
 
     //box
-    vec2 rb = roundBox( position, vec3(2.0,2.0,2.0),  0.5, zero, quat + vec4( 1., 1., 1., PI / 4. ) );
+    vec2 box = roundBox( position, vec3(2.0,2.0,2.0),  0.5, zero, quat + vec4( 1., 1., 1., PI / 4. ) );
 
     //torus
-    vec2 to0 = torus( twist( position, PI * sin( time ) ), vec2( 4.0,.15), zero, vec4( 1., 0., 0., 0. + time * .2 ) );
-    vec2 to1 = torus( position, vec2( 4.0,.15), zero, vec4( 0., 0., 1., PI *.5 + time * .2 ) );
+    vec2 to0 = torus( position, vec2( 4.0,.15), zero, quat );
+    vec2 to1 = torus( position, vec2( 4.0,.15), zero, vec4( 0., 0., 1., PI *.5 ) );
 
     //spheres
     vec2 sre = sphere( position, 3.0, zero, quat );
     vec2 sce = sphere( position, 1., zero, quat ) + perlin( position + time ) * .25;
 
-    //composition
-    return smin( sce, smin( to0, smin( to1, subtract( sre, rb  ), pnoise ), pnoise ), pnoise);
+    //shape composition
+    float blend = .5 + sin( time * .5 ) * .5;
+    vec2 _out = unionAB( sce, smin( to0, smin( to1, subtract( sre, box  ), blend ), blend ) );
+
+    //color attribution
+    float d = raymarchPrecision;
+
+    // _out.y = 1. is the default value : will be attributed to blended areas
+
+    if( _out.x >= box.x - d )_out.y = 0.80;
+    if( _out.x >= to1.x - d )_out.y = 0.66;
+    if( _out.x >= to0.x - d )_out.y = 0.25;
+    if( _out.x >= sce.x - d )_out.y = 0.;
+
+    return _out;
 }
 
 /////////////////////////////////////////////////////////////////////////
@@ -218,66 +207,6 @@ vec2 raymarching( vec3 rayOrigin, vec3 rayDir, float maxd, float precis ) {
 
 }
 
-//https://github.com/stackgl/glsl-sdf-normal
-
-vec3 calcNormal(vec3 pos, float eps) {
-  const vec3 v1 = vec3( 1.0,-1.0,-1.0);
-  const vec3 v2 = vec3(-1.0,-1.0, 1.0);
-  const vec3 v3 = vec3(-1.0, 1.0,-1.0);
-  const vec3 v4 = vec3( 1.0, 1.0, 1.0);
-
-  return normalize( v1 * field( pos + v1*eps ).x +
-                    v2 * field( pos + v2*eps ).x +
-                    v3 * field( pos + v3*eps ).x +
-                    v4 * field( pos + v4*eps ).x );
-}
-
-vec3 calcNormal(vec3 pos) {
-  return calcNormal(pos, 0.002);
-}
-
-
-//shadows & AO
-
-//https://www.shadertoy.com/view/Xds3zN
-
-float softshadow( in vec3 ro, in vec3 rd, in float mint, in float tmax, in float K )
-{
-	float res = 1.0;
-    float t = mint;
-    for( int i=0; i<shadowSteps; i++ )
-    {
-		float h = field( ro + rd*t ).x;
-        res = min( res, K * h/t );
-        t += clamp( h, 0.02, 0.10 );
-        if( h<0.001 || t>tmax ) break;
-    }
-    return clamp( res, 0.0, 1.0 );
-}
-
-float calcAO( in vec3 pos, in vec3 nor )
-{
-	float occ = 0.0;
-    float sca = 1.0;
-    for( int i=0; i<ambienOcclusionSteps; i++ )
-    {
-        float hr = 0.01 + 0.12*float(i)/float( ambienOcclusionSteps );
-        vec3 aopos =  nor * hr + pos;
-        float dd = field( aopos ).x;
-        occ += -(dd-hr)*sca;
-        sca *= 0.95;
-    }
-    return clamp( 1.0 - 3.0*occ, 0.0, 1.0 );
-}
-
-
-vec3 rimlight( vec3 pos, vec3 nor )
-{
-    vec3 v = normalize(-pos);
-    float vdn = 1.0 - max(dot(v, nor), 0.0);
-    return vec3(smoothstep(0., 1.0, vdn));
-}
-
 
 
 void main() {
@@ -288,27 +217,18 @@ void main() {
 
     vec2 collision = raymarching( camera, rayDirection, 100., .001 );
 
-    gl_FragColor = vec4( mix( color0, color1, sin( screenPos.y + 1.5 ) ) * 2., 1. );
-    if ( collision.x > -0.5)
+    gl_FragColor = vec4( vec3( .25,.25,.5), 1. );
+
+    if ( collision.x > -0.0)
     {
 
-        //"world" position
         vec3 pos = camera + rayDirection * collision.x;
 
-        //diffuse color
+        //retrieve the color set in the field() method
+
         vec3 col = vec3( collision.y );
 
-        //normal vector
-        vec3 nor = calcNormal( pos );
-
-        vec3 lig0 = normalize( light0 );
-        vec3 lightColor0 =  max( 0.0, dot( lig0, nor) ) * color0;
-
-        vec3 lightColor1 = max( 0.0, dot( normalize( light1 ), nor) ) * color1;
-
-        float depth = 1./ log( collision.x );
-
-        gl_FragColor = vec4( ( col + lightColor0 + lightColor1 ) * depth, 1. );
+        gl_FragColor = vec4( col, 1. );
 
     }
 

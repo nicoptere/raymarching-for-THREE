@@ -56,7 +56,7 @@ var RayMarcher = function(){
                 resolution:{ type:"v2", value:new THREE.Vector2( this.width, this.height ) },
                 time:{ type:"f", value:0 },
                 fov:{ type:"f", value:45 },
-                maxDistance:{ type:"f", value:50 },
+                raymarchMaximumDistance:{ type:"f", value:50 },
                 raymarchPrecision:{ type:"f", value:0.01},
                 camera:{ type:"v3", value:this.camera.position },
                 target:{ type:"v3", value:this.target }
@@ -138,7 +138,7 @@ var RayMarcher = function(){
 
         this.material.uniforms.fov.value = this.camera.fov * Math.PI / 180;
 
-        this.material.uniforms.maxDistance.value = this.camera.position.length() * 2;
+        this.material.uniforms.raymarchMaximumDistance.value = this.camera.position.length() * 2;
 
         this.material.uniforms.raymarchPrecision.value = .01;
 

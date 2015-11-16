@@ -1,7 +1,9 @@
 # raymarching-for-THREE
 ![screenshot](https://rawgit.com/nicoptere/raymarching-for-THREE/master/img/cover.jpg)
 <br/>
-a "helper" to work with raymarching in THREE.js [live demo here](https://rawgit.com/nicoptere/raymarching-for-THREE/master/index.html)<br>
+a "helper" to work with raymarching in THREE.js.
+* [basic demo](https://rawgit.com/nicoptere/raymarching-for-THREE/master/index.html)<br>
+* [interactive demo](https://rawgit.com/nicoptere/raymarching-for-THREE/master/interactive.html) adds mouse controls<br>
 it is heavily based on http://stack.gl/ core modules & scripts<br>
 <br>
 [THREE.js](http://threejs.org/) is a popular WebGL library, Raymarching Distance Fields is trendy nowadays, this is a way to bring them together. most of (all!) the work is done by the fragment shader, do not expect anything even remotely complex on the javascript side :)<br>

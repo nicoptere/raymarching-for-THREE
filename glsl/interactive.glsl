@@ -2,7 +2,7 @@
 uniform vec2 resolution;
 uniform float time;
 uniform float fov;
-uniform float maxDistance;
+uniform float raymarchMaximumDistance;
 uniform float raymarchPrecision;
 uniform vec3 camera;
 uniform vec3 target;
@@ -129,6 +129,15 @@ float perlin(vec3 p) {
 	return mix(a.x, a.y, f.z);
 }
 
+vec2 city( vec3 p )
+{
+    float x = mod( p.z, .10 ) - mod( p.z, .50 ) + mod( p.z, .90 ) - mod( p.z, .92 );
+    float y = mod( p.x, .20 ) - mod( p.x, .20 ) + mod( p.x, .40 ) - mod( p.x, .02 );
+    float z = mod( p.y, .50 ) - mod( p.y, .30 ) + mod( p.y, .20 ) - mod( p.y, .12 );
+    float s = 4.;
+    vec3 size = vec3(max( y,z ) * s,  2., max( x,z ) * s);//z * s );x * s
+    return vec2( length( max( abs( p )-size, 0.0 ) )-.1,1.);
+}
 
 /////////////////////////////////////////////////////////////////////////
 
@@ -139,7 +148,8 @@ float perlin(vec3 p) {
 /////////////////////////////////////////////////////////////////////////
 
 
-const int steps = 50;
+const int raymarchSteps = 50;
+
 const int shadowSteps = 4;
 const int ambienOcclusionSteps = 3;
 const float PI = 3.14159;
@@ -170,7 +180,8 @@ vec2 field( vec3 position )
 
     //composition
     return smin( sce, smin( to0, smin( to1, subtract( sre, rb  ), pnoise ), pnoise ), pnoise);
-
+    //return intersectionAB( city( position ),  rb );
+    //return city( position );
 }
 
 /////////////////////////////////////////////////////////////////////////
@@ -189,7 +200,7 @@ vec2 raymarching( vec3 rayOrigin, vec3 rayDir, float maxd, float precis ) {
     float dist   = 0.0;
     float type   = -1.0;
     vec2  res    = vec2(-1.0, -1.0);
-    for (int i = 0; i < steps; i++) {
+    for (int i = 0; i < raymarchSteps; i++) {
 
         if (latest < precis || dist > maxd) break;
 
@@ -272,7 +283,7 @@ void main() {
 
     vec3  rayDirection = getRay( camera, target, screenPos, fov );
 
-    vec2 collision = raymarching( camera, rayDirection, maxDistance, raymarchPrecision );
+    vec2 collision = raymarching( camera, rayDirection, raymarchMaximumDistance, raymarchPrecision );
 
     gl_FragColor = vec4( mix( color0, color1, sin( screenPos.y + 1.5 ) ) * 2., 1. );
     if ( collision.x > -0.5)

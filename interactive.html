@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, shrink-to-fit=0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <title></title>
+    <style>
+        head, body{
+            width:100%;
+            height:100%;
+            overflow: hidden;
+            top:0;
+            left:0;
+            margin:0;
+            padding:0;
+        }
+    </style>
+</head>
+<body>
+<script src="vendor/three.min.js"></script>
+<!--
+<script src="vendor/postprocessing/EffectComposer.js"></script>
+<script src="vendor/postprocessing/RenderPass.js"></script>
+<script src="vendor/postprocessing/ShaderPass.js"></script>
+<script src="vendor/postprocessing/MaskPass.js"></script>
+
+<script src="vendor/shaders/CopyShader.js"></script>
+<script src="vendor/shaders/FXAAShader.js"></script>
+/-->
+
+<!--<script src="MouseControls.js"></script>-->
+<script src="vendor/controls/OrbitControls.js"></script>
+
+<script src="raymarcher.js"></script>
+<script src="composer.js"></script>
+
+<script>
+
+    var rm;
+    var composer;
+    function init() {
+
+        rm = new RayMarcher();
+        rm.loadFragmentShader("glsl/interactive.glsl", onFragmentLoaded );
+
+        new THREE.OrbitControls( rm.camera );
+
+        rm.camera.position.z = 8;
+
+//        composer = new Composer( rm );
+
+        document.body.appendChild( rm.domElement );
+        window.addEventListener( "resize", onResize, false );
+        onResize();
+    }
+
+    function onFragmentLoaded( scope )
+    {
+
+        scope.setUniform( "color0", "v3", new THREE.Vector3(0.9, 0.9, 0.0) ); //yellow
+        scope.setUniform( "light0", "v3", new THREE.Vector3(-0.5, 0.75, -0.5) );
+
+        scope.setUniform( "color1", "v3", new THREE.Vector3(0.0, 0.2, 0.9) ); //blue
+        scope.setUniform( "light1", "v3", new THREE.Vector3( 0.5, -0.75, 0.5) );
+
+    }
+
+    function onResize(e)
+    {
+        rm.setSize( window.innerWidth, window.innerHeight );
+        if( composer !=null )composer.setSize( window.innerWidth, window.innerHeight );
+    }
+
+    function animate() {
+
+
+        requestAnimationFrame( animate );
+
+        if( rm.loaded ){
+
+//            rm.target.y = 2 * ( Math.sin( Date.now() * 0.001 ) * .5 );
+            var l1 = rm.getUniform( "light1" );
+            if( l1 != null )
+            {
+                rm.getUniform( "light1" ).value.x = 20 * ( Math.cos( Date.now() * 0.001 ) );
+                rm.getUniform( "light1" ).value.z = 20 * ( Math.sin( Date.now() * 0.001 ) );
+            }
+        }
+
+        rm.render();
+        if(rm.loaded && composer !=null ) composer.render();
+
+    }
+
+    init();
+    animate();
+
+
+
+</script>
+
+</body>
+</html>

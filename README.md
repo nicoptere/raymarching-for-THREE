@@ -4,6 +4,7 @@
 a "helper" to work with raymarching in THREE.js.
 * [basic demo](https://rawgit.com/nicoptere/raymarching-for-THREE/master/index.html)<br>
 * [interactive demo](https://rawgit.com/nicoptere/raymarching-for-THREE/master/interactive.html) (mouse controls)<br>
+* [color segmentation](https://rawgit.com/nicoptere/raymarching-for-THREE/master/colors.html)<br>
 
 it is heavily based on http://stack.gl/ core modules & scripts<br>
 <br>
@@ -74,7 +75,36 @@ for the sake of exhibiting the beauty of Raymarching, the above shape is produce
 
 then some [colors are being computed](https://github.com/nicoptere/raymarching-for-THREE/blob/master/glsl/noise_bulb.glsl#L270-L286) with the result of this evaluation.
 
-if you want to use the effectComposer :
+# differents colors:
+![colors](https://cdn.rawgit.com/nicoptere/raymarching-for-THREE/master/img/colors.png)
+to assign different colors to the different parts of the shape you can do somethign like:<br>
+
+    //shape composition
+    float blend = .5 + sin( time * .5 ) * .5;
+    vec2 _out = unionAB( sce, smin( to0, smin( to1, subtract( sre, box  ), blend ), blend ) );
+
+    //color attribution
+
+    //the Y value of the return value will be used to apply a different shading
+    // _out.y = 1. is the default value, here, it will be attributed to blended areas
+
+    //we can retrieve the elements by depth
+    //we use the raymarch precision as a threshold
+    float d = raymarchPrecision;
+
+    //then an object is found like:
+
+    if( _out.x > box.x - d )_out.y = 0.80;
+    if( _out.x > to1.x - d )_out.y = 0.66;
+    if( _out.x > to0.x - d )_out.y = 0.25;
+    if( _out.x > sce.x - d )_out.y = 0.;
+
+    return _out;
+
+check out the [live demo for the color selection](https://rawgit.com/nicoptere/raymarching-for-THREE/master/colors.html)<br>
+see [the source shader](https://github.com/nicoptere/raymarching-for-THREE/blob/master/glsl/colors.glsl#L161-L181) for the code.<br>
+
+# using the effectComposer
 
     <!-- import three and the raymarcher /-->
     <script src="vendor/three.min.js"></script>
@@ -122,47 +152,15 @@ if you want to use the effectComposer :
 
     </script>
 
-<hr>
 
-
-# differents colors:
-![colors](https://cdn.rawgit.com/nicoptere/raymarching-for-THREE/master/img/colors.png)
-to assign different colors to the different parts of the shape you can do somethign like:<br>
-
-    //shape composition
-    float blend = .5 + sin( time * .5 ) * .5;
-    vec2 _out = unionAB( sce, smin( to0, smin( to1, subtract( sre, box  ), blend ), blend ) );
-
-    //color attribution
-
-    //the Y value of the return value will be used to apply a different shading
-    // _out.y = 1. is the default value, here, it will be attributed to blended areas
-
-    //we can retrieve the elements by depth
-    //we use the raymarch precision as a threshold
-    float d = raymarchPrecision;
-
-    //then an object is found like:
-
-    if( _out.x > box.x - d )_out.y = 0.80;
-    if( _out.x > to1.x - d )_out.y = 0.66;
-    if( _out.x > to0.x - d )_out.y = 0.25;
-    if( _out.x > sce.x - d )_out.y = 0.;
-
-    return _out;
-
-check out the [live demo for the color selection](https://rawgit.com/nicoptere/raymarching-for-THREE/master/colors.html)<br>
-see [the source shader](https://github.com/nicoptere/raymarching-for-THREE/blob/master/glsl/colors.glsl#L161-L181) for the code.<br>
-
-
-# tips & things I've learnt
+# tips
 
 * retrieve depth :
     float depth = ( 1./ log( collision.x ) );
 
 
-<hr>
-helpful links:<br>
+
+#helpful links:
 
 distance functions: http://iquilezles.org/www/articles/distfunctions/distfunctions.htm<br>
 an example / refernce for basically everything https://www.shadertoy.com/view/Xds3zN<br>

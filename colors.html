@@ -28,7 +28,7 @@
     function init() {
 
         rm = new RayMarcher();
-        rm.loadFragmentShader("glsl/colors.glsl", onFragmentLoaded );
+        rm.loadFragmentShader("glsl/colors.glsl" );
 
         new THREE.OrbitControls( rm.camera );
 
@@ -37,17 +37,6 @@
         document.body.appendChild( rm.domElement );
         window.addEventListener( "resize", onResize, false );
         onResize();
-    }
-
-    function onFragmentLoaded( scope )
-    {
-
-        scope.setUniform( "color0", "v3", new THREE.Vector3(0.9, 0.9, 0.0) ); //yellow
-        scope.setUniform( "light0", "v3", new THREE.Vector3(-0.5, 0.75, -0.5) );
-
-        scope.setUniform( "color1", "v3", new THREE.Vector3(0.0, 0.2, 0.9) ); //blue
-        scope.setUniform( "light1", "v3", new THREE.Vector3( 0.5, -0.75, 0.5) );
-
     }
 
     function onResize(e)

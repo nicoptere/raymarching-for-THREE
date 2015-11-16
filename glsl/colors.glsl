@@ -7,12 +7,6 @@ uniform float raymarchPrecision;
 uniform vec3 camera;
 uniform vec3 target;
 
-uniform vec3 color0;
-uniform vec3 color1;
-
-uniform vec3 light0;
-uniform vec3 light1;
-
 
 //uses most of the StackGL methods
 //https://github.com/stackgl

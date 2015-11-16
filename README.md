@@ -155,38 +155,11 @@ check out the [live demo for the color selection](https://rawgit.com/nicoptere/r
 see [the source shader](https://github.com/nicoptere/raymarching-for-THREE/blob/master/glsl/colors.glsl#L161-L181) for the code.<br>
 
 
-tips & things I've learnt
+# tips & things I've learnt
 
-*retrieve depth :
+* retrieve depth :
     float depth = ( 1./ log( collision.x ) );
 
-*assign different colors to result
-
-    //in the 'field()' method, store the result
-
-    vec2 _out = unionAB( sce, smin( to0, smin( to1, subtract( sre, rb  ), pnoise ), pnoise ) );
-
-    //default Y value is 1.
-
-
-    vec2 _out = unionAB( sce, smin( to0, smin( to1, subtract( sre, rb  ), pnoise ), pnoise ));
-
-    //use the raymarcher's precision as a threshold
-
-    float d = raymarchPrecision;
-
-    //select an object by depth:
-    //the result of the raycasting > the objects depth and <
-    if( _out.x > to1.x - d
-    &&  _out.x < sce.x - d )_out.y = 0.5;
-
-    //then another
-    if( _out.x > sce.x - d )_out.y = 0.;
-
-    //or use step to remove the conditional
-    _out.y *= step( _out.x, sce.x-d );
-
-    return _out;
 
 <hr>
 helpful links:<br>

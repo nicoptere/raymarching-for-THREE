@@ -133,7 +133,7 @@ float perlin(vec3 p) {
 
 /////////////////////////////////////////////////////////////////////////
 
-const int raymarchSteps = 50;
+const int raymarchSteps = 200;
 #define PI 3.14159
 vec2 field( vec3 position )
 {
@@ -144,7 +144,7 @@ vec2 field( vec3 position )
     //rotation
     vec4 quat = vec4( 1., 0.,0.,0. );
 
-    //
+    //twist the whole result
     position = twist( position, sin( time ) * .5 );
 
     //box
@@ -163,14 +163,20 @@ vec2 field( vec3 position )
     vec2 _out = unionAB( sce, smin( to0, smin( to1, subtract( sre, box  ), blend ), blend ) );
 
     //color attribution
+
+    //the Y value of the return value will be used to apply a different shading
+    // _out.y = 1. is the default value, here, it will be attributed to blended areas
+
+    //we can retrieve the elements by depth
+    //we use the raymarch precision as a threshold
     float d = raymarchPrecision;
 
-    // _out.y = 1. is the default value : will be attributed to blended areas
+    //then an object is found like:
 
-    if( _out.x >= box.x - d )_out.y = 0.80;
-    if( _out.x >= to1.x - d )_out.y = 0.66;
-    if( _out.x >= to0.x - d )_out.y = 0.25;
-    if( _out.x >= sce.x - d )_out.y = 0.;
+    if( _out.x > box.x - d )_out.y = 0.80;
+    if( _out.x > to1.x - d )_out.y = 0.66;
+    if( _out.x > to0.x - d )_out.y = 0.25;
+    if( _out.x > sce.x - d )_out.y = 0.;
 
     return _out;
 }
@@ -207,8 +213,6 @@ vec2 raymarching( vec3 rayOrigin, vec3 rayDir, float maxd, float precis ) {
 
 }
 
-
-
 void main() {
 
     vec2  screenPos    = squareFrame( resolution );
@@ -219,17 +223,13 @@ void main() {
 
     gl_FragColor = vec4( vec3( .25,.25,.5), 1. );
 
-    if ( collision.x > -0.0)
+    if ( collision.x > -0.5)
     {
 
-        vec3 pos = camera + rayDirection * collision.x;
-
-        //retrieve the color set in the field() method
-
+        //retrieve the Y value set in the field() method
         vec3 col = vec3( collision.y );
 
         gl_FragColor = vec4( col, 1. );
 
     }
-
 }

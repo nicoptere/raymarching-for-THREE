@@ -123,6 +123,35 @@ if you want to use the effectComposer :
     </script>
 
 <hr>
+
+to assign different colors to the different parts of the shape you can do somethign like:
+
+    //shape composition
+    float blend = .5 + sin( time * .5 ) * .5;
+    vec2 _out = unionAB( sce, smin( to0, smin( to1, subtract( sre, box  ), blend ), blend ) );
+
+    //color attribution
+
+    //the Y value of the return value will be used to apply a different shading
+    // _out.y = 1. is the default value, here, it will be attributed to blended areas
+
+    //we can retrieve the elements by depth
+    //we use the raymarch precision as a threshold
+    float d = raymarchPrecision;
+
+    //then an object is found like:
+
+    if( _out.x > box.x - d )_out.y = 0.80;
+    if( _out.x > to1.x - d )_out.y = 0.66;
+    if( _out.x > to0.x - d )_out.y = 0.25;
+    if( _out.x > sce.x - d )_out.y = 0.;
+
+    return _out;
+
+
+see [the source shader for]() 
+
+
 tips & things I've learnt
 
 *retrieve depth :

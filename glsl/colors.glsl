@@ -160,7 +160,7 @@ vec2 field( vec3 position )
 
     //the Y value of the return value will be used to apply a different shading
     // _out.y = 1. is the default value, here, it will be attributed to blended areas
-
+    _out.y = 1.;
     //we can retrieve the elements by depth
     //we use the raymarch precision as a threshold
     float d = raymarchPrecision;
@@ -171,6 +171,13 @@ vec2 field( vec3 position )
     if( _out.x > to1.x - d )_out.y = 0.66;
     if( _out.x > to0.x - d )_out.y = 0.25;
     if( _out.x > sce.x - d )_out.y = 0.;
+
+    //or
+    _out.y = 1.;
+    _out.y -= step( box.x - d, _out.x ) * .2
+        + 	 step( to0.x - d, _out.x ) * .35
+        + 	 step( to1.x - d, _out.x ) * .75
+        + 	 step( sce.x - d, _out.x ) * 1.0;
 
     return _out;
 }

@@ -26,7 +26,7 @@
     function init() {
 
         rm = new RayMarcher();
-        rm.loadFragmentShader("glsl/poly.glsl", function (scope) {
+        rm.loadFragmentShader("glsl/halibut.glsl", function (scope) {
             scope.setTexture( "map", "img/matcap.png" );
         } );
         document.body.appendChild( rm.domElement );

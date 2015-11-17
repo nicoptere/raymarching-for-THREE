@@ -59,6 +59,7 @@ the default raymarchPrecision is 0.01 which is fairly high (= coarse):
 
 if you need more accurate renders, increase the raymarchMaximumDistance and lower the raymarchPrecision.
 
+
 also, the raymarching steps count is set directly in the shader like [here](https://github.com/nicoptere/raymarching-for-THREE/blob/master/glsl/fragment.glsl#L130)
 increasing it will give much more precise results at the cost of more intensive computations.
 
@@ -120,6 +121,8 @@ to assign different colors to the different parts of the shape you can do someth
     if( _out.x > sce.x - d )_out.y = 0.;
 
     return _out;
+
+
 
 check out the [live demo for the color selection](https://rawgit.com/nicoptere/raymarching-for-THREE/master/colors.html)<br>
 see [the source shader](https://github.com/nicoptere/raymarching-for-THREE/blob/master/glsl/colors.glsl#L161-L181) for the code.<br>

@@ -122,7 +122,15 @@ to assign different colors to the different parts of the shape you can do someth
 
     return _out;
 
+an alternative to remove the conditional branching would be to write it as :
 
+    _out.y = 1.;
+    _out.y -= step( box.x - d, _out.x ) * .2
+        + 	 step( to0.x - d, _out.x ) * .35
+        + 	 step( to1.x - d, _out.x ) * .75
+        + 	 step( sce.x - d, _out.x ) * 1.0;
+
+this approach is supposed to be faster, the downside is that it is less legible.
 
 check out the [live demo for the color selection](https://rawgit.com/nicoptere/raymarching-for-THREE/master/colors.html)<br>
 see [the source shader](https://github.com/nicoptere/raymarching-for-THREE/blob/master/glsl/colors.glsl#L161-L181) for the code.<br>

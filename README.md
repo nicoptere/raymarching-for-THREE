@@ -5,6 +5,7 @@ a "helper" to work with raymarching in THREE.js.
 * [basic demo](https://rawgit.com/nicoptere/raymarching-for-THREE/master/index.html)<br>
 * [interactive demo](https://rawgit.com/nicoptere/raymarching-for-THREE/master/interactive.html) (mouse controls)<br>
 * [color segmentation](https://rawgit.com/nicoptere/raymarching-for-THREE/master/colors.html)<br>
+* [halibut](https://rawgit.com/nicoptere/raymarching-for-THREE/master/halibut.html)<br>
 
 it is heavily based on http://stack.gl/ core modules & scripts<br>
 <br>

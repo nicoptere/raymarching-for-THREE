@@ -165,6 +165,11 @@ repeat a shape at a given interval (described by a vec3 r ):
 
     vec3 repeat( vec3 p, vec3 r ) { return mod( p, r ) - .5 * r; }
 
+    //& in the field() function
+    vec3 p = repeat( position, r );
+
+    //p is a repeated position, use it to place evenly spaced objects
+
 spherical uvs:
 
     texture2D( map, nor.xy / 2. + .5 );

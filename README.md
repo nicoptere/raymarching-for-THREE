@@ -127,13 +127,9 @@ see [the source shader](https://github.com/nicoptere/raymarching-for-THREE/blob/
         var composer;
         function init() {
 
+            [instantiate raymarcher as above]
 
-            var w = window.innerWidth;
-            var h = window.innerHeight;
-
-            rm = new RayMarcher().setSize( w,h ).loadFragmentShader( "glsl/noise_bulb.glsl" );
-            document.body.appendChild( rm.domElement );
-
+            //pass the raymarcher to the Composer
             composer = new Composer( rm );
             composer.setSize( w,h );
 
@@ -141,8 +137,8 @@ see [the source shader](https://github.com/nicoptere/raymarching-for-THREE/blob/
 
         function animate() {
 
-            requestAnimationFrame( animate );
-            rm.render();
+            [ call rm.render() ]
+
             if( rm.loaded )composer.render();
 
         }
@@ -151,26 +147,46 @@ see [the source shader](https://github.com/nicoptere/raymarching-for-THREE/blob/
         animate();
 
     </script>
+the composer contains whatever filters you can think of and is called after the RayMarcher' render<br>
+
 
 
 # tips
 
-* retrieve depth :
-    float depth = ( 1./ log( collision.x ) );
+* retrieve depth: float depth = ( 1./ log( collision.x ) );
+* scale an object: primitive( ( position/scale ) ) * scale;
+* repeat a shape at a given interval (described by a vec3 r ): vec3 repeat( vec3 p, vec3 r ) { return mod( p, r ) - .5 * r; }
+* spherical uvs: texture2D( map, nor.xy / 2. + .5 ); (note: you'll need to [lookat]() the camera if you want them always aligned)
 
-
+#wandering
+![halibut](https://cdn.rawgit.com/nicoptere/raymarching-for-THREE/master/img/halibut.jpg)<br>
+[halibut demo](http://barradeau.com/dump/raymarching/halibut.html)<br>
 
 #helpful links:
 
-distance functions: http://iquilezles.org/www/articles/distfunctions/distfunctions.htm<br>
-an example / refernce for basically everything https://www.shadertoy.com/view/Xds3zN<br>
-POUET's thread on primitives, noise, AO, SSS & more http://www.pouet.net/topic.php?which=7931&page=1<br>
+
+WebGL [quick reference](http://www.shaderific.com/glsl/) for types, functions, statements etc.
+
+[Jaume Sanchez Elias](https://twitter.com/thespite)'s [Shader Editor chrome extension](https://chrome.google.com/webstore/detail/shader-editor/ggeaidddejpbakgafapihjbgdlbbbpob) mandatory tool to work with shaders
+
+[Íñgo Quílez](http://www.iquilezles.org/) [distance functions](http://iquilezles.org/www/articles/distfunctions/distfunctions.htm) and his live [example / refernce for basically everything](https://www.shadertoy.com/view/Xds3zN)
+
+[POUET's thread on primitives, noise, AO, SSS & more]( http://www.pouet.net/topic.php?which=7931&page=1)
+
+[Kevin Roast](https://twitter.com/kevinroast)'s [homepage](http://www.kevs3d.co.uk/dev/shaders/) is full of examples, rendering tricks, shapes and more
 
 very interesting series of articles about distance estimators & fractals:
 * [Distance Estimated 3D Fractals (Part I)](http://blog.hvidtfeldts.net/index.php/2011/06/distance-estimated-3d-fractals-part-i/)
 * [Distance Estimated 3D Fractals (II): Lighting and Coloring](http://blog.hvidtfeldts.net/index.php/2011/08/distance-estimated-3d-fractals-ii-lighting-and-coloring/)
+* [Distance Estimated 3D Fractals (III): Folding Space](http://blog.hvidtfeldts.net/index.php/2011/08/distance-estimated-3d-fractals-iii-folding-space/)
+* [Distance Estimated 3D Fractals (IV): The Holy Grail](http://blog.hvidtfeldts.net/index.php/2011/09/distance-estimated-3d-fractals-iv-the-holy-grail/)
+* [Distance Estimated 3D Fractals (V): The Mandelbulb & Different DE Approximations](http://blog.hvidtfeldts.net/index.php/2011/09/distance-estimated-3d-fractals-v-the-mandelbulb-different-de-approximations/)
+* [Distance Estimated 3D Fractals (VI): The Mandelbox](http://blog.hvidtfeldts.net/index.php/2011/11/distance-estimated-3d-fractals-vi-the-mandelbox/)
+* [Distance Estimated 3D Fractals (VII): Dual Numbers](http://blog.hvidtfeldts.net/index.php/2011/12/distance-estimated-3d-fractals-vii-dual-numbers/)
+* [Distance Estimated 3D Fractals (Part VIII): Epilogue](http://blog.hvidtfeldts.net/index.php/2012/05/distance-estimated-3d-fractals-part-viii-epilogue/)
 
+which incidentally reminded me of [subblue](https://twitter.com/subblue)'s [beautiful works](http://sub.blue/)
 
-[the blinn-phong lighting model](https://en.wikipedia.org/wiki/Blinn%E2%80%93Phong_shading_model)
+a reminder of how [the blinn-phong shading](https://en.wikipedia.org/wiki/Blinn%E2%80%93Phong_shading_model) works
 
 <hr>

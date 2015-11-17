@@ -56,20 +56,19 @@ var RayMarcher = function(){
                 resolution:{ type:"v2", value:new THREE.Vector2( this.width, this.height ) },
                 time:{ type:"f", value:0 },
                 fov:{ type:"f", value:45 },
-                raymarchMaximumDistance:{ type:"f", value:50 },
-                raymarchPrecision:{ type:"f", value:0.01},
                 camera:{ type:"v3", value:this.camera.position },
-                target:{ type:"v3", value:this.target }
+                target:{ type:"v3", value:this.target },
+                raymarchMaximumDistance:{ type:"f", value:50 },
+                raymarchPrecision:{ type:"f", value:0.01}
 
             },
-            //vertexShader : "void main() {gl_Position =  vec4( position, 1.0 );}",
-            vertexShader : "void main() {gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );}",
+            vertexShader : "void main() {gl_Position =  vec4( position, 1.0 );}",
             fragmentShader : fs
         });
         this.update();
 
-        this.loaded = true;
         if( cb != null )cb( this );
+        this.loaded = true;
         return this;
     }
 
@@ -79,6 +78,7 @@ var RayMarcher = function(){
         {
             throw new Error("material not initialised, use setFragmentShader() first.");
         }
+        rm.loaded = false;
 
         var scope = this;
         this.material.uniforms[ name ] = {type:'t', value:null };
@@ -86,6 +86,7 @@ var RayMarcher = function(){
 
             scope.material.uniforms[ name ].value = texture;
             scope.material.needsUpdate = true;
+            scope.loaded = true;
             texture.needsUpdate = true;
 
         });
@@ -98,8 +99,10 @@ var RayMarcher = function(){
         {
             throw new Error("material not initialised, use setFragmentShader() first.");
         }
+
         this.material.uniforms[ name ] = {type:type, value:value };
         return this;
+
     }
 
     function getUniform( name ){
@@ -140,7 +143,6 @@ var RayMarcher = function(){
         this.material.uniforms.fov.value = this.camera.fov * Math.PI / 180;
 
         this.material.uniforms.raymarchMaximumDistance.value = this.camera.position.length() * 2;
-
         this.material.uniforms.raymarchPrecision.value = .01;
 
         this.material.uniforms.camera.value = this.camera.position;

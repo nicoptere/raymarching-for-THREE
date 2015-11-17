@@ -286,7 +286,7 @@ void main() {
 
     vec3  rayDirection = getRay( camera, target, screenPos, fov );
 
-    vec2 collision = raymarching( camera, rayDirection, 100., .001 );
+    vec2 collision = raymarching( camera, rayDirection, raymarchMaximumDistance, raymarchPrecision );
 
     gl_FragColor = vec4( mix( color0, color1, sin( screenPos.y + 1.5 ) ) * 2., 1. );
     if ( collision.x > -0.5)

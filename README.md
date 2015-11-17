@@ -45,6 +45,9 @@ should give you something like this:
 ![noise bulb](https://cdn.rawgit.com/nicoptere/raymarching-for-THREE/master/img/noise_bulb.jpg)<br>
 [noise bulb demo](https://rawgit.com/nicoptere/raymarching-for-THREE/master/noise_bulb.html)<br>
 
+the 2 most important values for the raymarching are the maximum distance and the precision (the minimum step distance under which the raymarching loops bails out).
+
+
 for the sake of exhibiting the beauty of Raymarching, the above shape is produced by [this distance estimator](https://github.com/nicoptere/raymarching-for-THREE/blob/master/glsl/noise_bulb.glsl#L171-L186):
 
     vec2 field( vec3 position ){
@@ -75,6 +78,7 @@ for the sake of exhibiting the beauty of Raymarching, the above shape is produce
     }
 
 then some [colors are being computed](https://github.com/nicoptere/raymarching-for-THREE/blob/master/glsl/noise_bulb.glsl#L270-L286) with the result of this evaluation.
+
 
 # differents colors:
 ![colors](https://cdn.rawgit.com/nicoptere/raymarching-for-THREE/master/img/colors.png)
@@ -154,7 +158,7 @@ the composer contains whatever filters you can think of and is called after the 
 
 # tips
 
-retrieve depth (in the main() function):
+cheap depth (in the main() function) :
 
     float depth = ( 1./ log( collision.x ) );
 

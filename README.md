@@ -153,7 +153,7 @@ the composer contains whatever filters you can think of and is called after the 
 
 # tips
 
-retrieve depth:
+retrieve depth (in the main() function):
 
     float depth = ( 1./ log( collision.x ) );
 
@@ -169,7 +169,7 @@ spherical uvs:
 
     texture2D( map, nor.xy / 2. + .5 );
 
-you can [lookat](https://github.com/nicoptere/raymarching-for-THREE/blob/master/glsl/bits/util/lookat.glsl) the camera to always face the it
+you can [lookat](https://github.com/nicoptere/raymarching-for-THREE/blob/master/glsl/bits/util/lookat.glsl) the camera to always face it
 
 #wandering
 ![halibut](https://cdn.rawgit.com/nicoptere/raymarching-for-THREE/master/img/halibut.jpg)<br>

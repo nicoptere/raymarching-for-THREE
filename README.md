@@ -155,8 +155,10 @@ the composer contains whatever filters you can think of and is called after the 
 
 * retrieve depth: float depth = ( 1./ log( collision.x ) );
 * scale an object: primitive( ( position/scale ) ) * scale;
-* repeat a shape at a given interval (described by a vec3 r ): vec3 repeat( vec3 p, vec3 r ) { return mod( p, r ) - .5 * r; }
-* spherical uvs: texture2D( map, nor.xy / 2. + .5 ); (you can nor *= [lookat](https://github.com/nicoptere/raymarching-for-THREE/blob/master/glsl/bits/util/lookat.glsl) the camera to always face the viewer)
+* repeat a shape at a given interval (described by a vec3 r ):
+        vec3 repeat( vec3 p, vec3 r ) { return mod( p, r ) - .5 * r; }
+* spherical uvs:
+        texture2D( map, nor.xy / 2. + .5 ); (you can nor *= [lookat](https://github.com/nicoptere/raymarching-for-THREE/blob/master/glsl/bits/util/lookat.glsl) the camera to always face the viewer)
 
 #wandering
 ![halibut](https://cdn.rawgit.com/nicoptere/raymarching-for-THREE/master/img/halibut.jpg)<br>

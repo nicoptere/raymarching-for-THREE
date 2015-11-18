@@ -46,10 +46,10 @@ should give you something like this:
 ![noise bulb](https://cdn.rawgit.com/nicoptere/raymarching-for-THREE/master/img/noise_bulb.jpg)<br>
 [noise bulb demo](https://rawgit.com/nicoptere/raymarching-for-THREE/master/noise_bulb.html)<br>
 
-the 2 most important values for the raymarching are the maximum distance and the precision (the minimum step distance under which the raymarching loops bails out).
+the 2 most important values for the raymarching are the maximum distance and the precision (the minimum step distance under which the raymarching loop bails out).
 by default, [they are being updated in the raymarcher update()](https://github.com/nicoptere/raymarching-for-THREE/blob/master/raymarcher.js#L145-L146) method (which is called by the rm.render() by default):
 
-the default value for raymarchMaximumDistance is twice the length of the camera's position ; in gives enough depth to render most of the things
+the default value for raymarchMaximumDistance is twice the length of the camera's position ; it gives enough depth to render most of the things
 
         this.camera.position.length() * 2;
 
@@ -87,8 +87,8 @@ for the sake of exhibiting the beauty of Raymarching, the above shape is produce
         vec2 noi = vec2( max( -.5, .5-abs( perlin( nPos, quat ) ) ), 0. );
 
         //combines the shapes:
-        // 1 - blends the sphere and the cylinder
-        // 2 - return s the intersection of the blended shapes with the noise field
+        // 1 - blend the sphere and the cylinder: smin( sph, cyl, .99 )
+        // 2 - return the intersection of the blended shapes with the noise field
         return intersectionAB( smin( sph, cyl, .99 ), noi );
 
     }

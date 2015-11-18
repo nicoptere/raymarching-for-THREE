@@ -18,20 +18,27 @@
 </head>
 <body>
 <script src="vendor/three.min.js"></script>
+<script src="vendor/controls/OrbitControls.js"></script>
 <script src="raymarcher.js"></script>
 
 <script>
 
     var rm;
+    var c;
     function init() {
 
         rm = new RayMarcher();
-        rm.loadFragmentShader("glsl/halibut.glsl", function (scope) {
-            scope.setTexture( "map", "img/matcap.png" );
+        rm.loadFragmentShader("glsl/hulkbuster.glsl", function (scope) {
+            scope.setTexture( "map", "img/env.png" );
         } );
         document.body.appendChild( rm.domElement );
 
-        rm.camera.position.set( 10, 18, -8 );
+        c = new THREE.OrbitControls( rm.camera );
+        c.minDistance = 6;
+        c.maxDistance = 8;
+        c.minPolarAngle = Math.PI / 4;
+        c.maxPolarAngle = Math.PI / 2;
+        rm.camera.position.set( -10, 10, -10 );
 
         window.addEventListener( "resize", onResize, false );
         onResize();
@@ -44,11 +51,13 @@
 
     function animate() {
 
-        var s = .01;
+        var s = .00;
         rm.target.z += s;
         rm.camera.position.z += s;
-
+        c.update();
         requestAnimationFrame( animate );
+
+
         rm.render();
     }
 

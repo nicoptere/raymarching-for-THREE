@@ -7,6 +7,10 @@ uniform vec3 camera;
 uniform vec3 target;
 uniform float raymarchMaximumDistance;
 uniform float raymarchPrecision;
+
+uniform sampler2D  texture;
+uniform samplerCube cubemap;
+
 /*
 Space Body
 my goal was to introduce some sub-surface scattering with hot color but the result is not as expected
@@ -49,6 +53,7 @@ vec2 map(vec3 p)
     vec2 res = vec2(0.);
 
 	float voro = Voronesque(p);
+	//float voro0 = Voronesque(p+1.);
 
  	float sp = shape(p);
     float spo = sp - voro;
@@ -151,6 +156,15 @@ void main()
 			float b = dot(n,normalize(ro-p))*0.9;
             f = (b*vec4(blackbody(2000.),0.9)+pow(b,0.2))*(1.0-d.x*.01);
 		}
+
+        vec3 reflRay = reflect(rd, n);
+        vec3 refrRay = refract(rd, n, .75);
+
+        vec3 cubeRefl = textureCube(cubemap, reflRay).rgb;//* refl_i;
+        vec3 cubeRefr = textureCube(cubemap, refrRay).rgb;//* refr_i;
+
+        f.rgb += cubeRefl * .5;
+        f.rgb -= cubeRefr * .5;
    	}
 
     gl_FragColor = mix( f, vec4(DeepSpaceColor, 1.), 1.0 - exp( -d.x*dstepf) );

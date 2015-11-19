@@ -28,17 +28,28 @@
     function init() {
 
         rm = new RayMarcher();
-        rm.loadFragmentShader("glsl/hulkbuster.glsl", function (scope) {
-            scope.setTexture( "map", "img/env.png" );
+        rm.loadFragmentShader("glsl/toy.glsl", function (scope) {
+
+            scope.setTexture( "texture", "img/env.png" );
+
+            var path = "img/cubemap/cube03_";
+            var format = '.png';
+            var urls = [
+                path + '0' + format, path + '1' + format,
+                path + '2' + format, path + '3' + format,
+                path + '4' + format, path + '5' + format
+            ];
+
+            scope.setCubemap( "cubemap", urls );
             animate();
         } );
         document.body.appendChild( rm.domElement );
 
         c = new THREE.OrbitControls( rm.camera );
-        c.minDistance = 6;
-        c.maxDistance = 8;
-        c.minPolarAngle = Math.PI / 4;
-        c.maxPolarAngle = Math.PI / 2;
+//        c.minDistance = 6;
+//        c.maxDistance = 8;
+//        c.minPolarAngle = Math.PI / 4;
+//        c.maxPolarAngle = Math.PI / 2;
         rm.camera.position.set( -10, 10, -10 );
 
         window.addEventListener( "resize", onResize, false );
@@ -59,7 +70,7 @@
         if( rm.material != null )
         {
             //override default raymarchMaximumDistance
-            rm.material.uniforms.raymarchMaximumDistance.value = rm.camera.position.length() * 4;
+//            rm.material.uniforms.raymarchMaximumDistance.value = rm.camera.position.length() * 4;
         }
         rm.render();
 

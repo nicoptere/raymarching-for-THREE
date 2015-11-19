@@ -1,6 +1,7 @@
 var RayMarcher = function(){
 
     var tl = new THREE.TextureLoader();
+    var cl = new THREE.CubeTextureLoader();
     var rc = new THREE.Raycaster();
     var mouse = new THREE.Vector2();
     function RayMarcher(){
@@ -93,6 +94,24 @@ var RayMarcher = function(){
         return this;
     }
 
+    function setCubemap( name, urls ){
+
+        if( this.material == null )
+        {
+            throw new Error("material not initialised, use setFragmentShader() first.");
+        }
+        rm.loaded = false;
+
+        var scope = this;
+        this.material.uniforms[ name ] = {type:'t', value:null };
+        cl.load( urls, function(texture) {
+            scope.material.uniforms[ name ].value = texture;
+            scope.material.needsUpdate = true;
+            scope.loaded = true;
+            texture.needsUpdate = true;
+        });
+    }
+
     function setUniform( name, type, value ){
 
         if( this.material == null )
@@ -167,6 +186,7 @@ var RayMarcher = function(){
     _p.loadFragmentShader = loadFragmentShader;
     _p.setFragmentShader = setFragmentShader;
     _p.setTexture = setTexture;
+    _p.setCubemap = setCubemap;
     _p.setUniform = setUniform;
     _p.getUniform = getUniform;
     _p.setSize = setSize;

@@ -198,7 +198,7 @@ repeat a shape at a given interval (described by a vec3 r ):
 
     //p is a repeated position, use it to place evenly spaced objects
 
-spherical uvs:
+spherical uvs: (Spherical Environment Mapping)
 
     texture2D( map, nor.xy / 2. + .5 );
 

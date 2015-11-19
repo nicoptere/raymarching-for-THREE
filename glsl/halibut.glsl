@@ -127,12 +127,13 @@ vec2 raymarching( vec3 rayOrigin, vec3 rayDir, float maxd, float precis ) {
     float type   = -1.0;
     for (int i = 0; i < raymarchSteps; i++) {
 
-        if (latest < precis || dist > maxd) break;
 
         vec2 result = field( rayOrigin + rayDir * dist );
+        if( result.x > precis ) result.x *= .3;
         latest = result.x;
         dist  += latest;
         type = result.y;
+        if (latest < precis || dist > maxd) break;
     }
 
     vec2 res    = vec2(-1.0, -1.0 );
@@ -217,7 +218,7 @@ void main() {
         vec3 dif = vec3( collision.y );
 
         //reflection (Spherical Environment Mapping)
-        vec3 tex = texture2D( map, nor.xy / 2. + .5 ).rgb;
+        vec3 tex = texture2D( map, ( nor * calcLookAtMatrix( pos, camera,0. ) ).xy / 2. + .5 ).rgb;
         dif += tex * .5;
 
         vec3 lig = normalize( camera ) + vec3(-0.5, 0.75, -0.5) ;

@@ -6,7 +6,8 @@ a "helper" to work with raymarching in THREE.js.
 * [interactive demo](https://rawgit.com/nicoptere/raymarching-for-THREE/master/interactive.html) (mouse controls)<br>
 * [color segmentation](https://rawgit.com/nicoptere/raymarching-for-THREE/master/colors.html)<br>
 * [halibut](https://rawgit.com/nicoptere/raymarching-for-THREE/master/halibut.html)<br>
-* [cells](https://rawgit.com/nicoptere/raymarching-for-THREE/master/cells.html)<br>
+* [hulkbuster](https://rawgit.com/nicoptere/raymarching-for-THREE/master/hulkbuster.html)<br>
+* [2D cells (not raymarched)](https://rawgit.com/nicoptere/raymarching-for-THREE/master/cells.html)<br>
 
 it is heavily based on http://stack.gl/ core modules & scripts<br>
 <br>
@@ -207,9 +208,11 @@ spherical uvs:
 
 you can [lookat](https://github.com/nicoptere/raymarching-for-THREE/blob/master/glsl/bits/util/lookat.glsl) the camera to always face it
 
-#wandering
+#examples
 ![halibut](https://cdn.rawgit.com/nicoptere/raymarching-for-THREE/master/img/halibut.jpg)<br>
 [halibut demo](http://barradeau.com/dump/raymarching/halibut.html)<br>
+![halibut](https://cdn.rawgit.com/nicoptere/raymarching-for-THREE/master/img/hulkbuster.jpg)<br>
+[halibut demo](http://barradeau.com/dump/raymarching/hulkbuster.html)<br>
 
 #helpful links:
 

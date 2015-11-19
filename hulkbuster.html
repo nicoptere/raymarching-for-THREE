@@ -30,6 +30,7 @@
         rm = new RayMarcher();
         rm.loadFragmentShader("glsl/hulkbuster.glsl", function (scope) {
             scope.setTexture( "map", "img/env.png" );
+            animate();
         } );
         document.body.appendChild( rm.domElement );
 
@@ -51,26 +52,20 @@
 
     function animate() {
 
-        var s = .00;
-        rm.target.z += s;
-        rm.camera.position.z += s;
         c.update();
         requestAnimationFrame( animate );
 
-
         rm.update();
-
         if( rm.material != null )
         {
             //override default raymarchMaximumDistance
             rm.material.uniforms.raymarchMaximumDistance.value = rm.camera.position.length() * 4;
         }
-
         rm.render();
+
     }
 
     init();
-    animate();
 
 
 

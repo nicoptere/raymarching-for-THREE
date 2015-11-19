@@ -97,8 +97,7 @@ var RayMarcher = function(){
 
         if( this.material == null )
         {
-            console.warn("material not initialised, use setFragmentShader() first.");
-            return this;
+            throw new Error("material not initialised, use setFragmentShader() first.");
         }
 
         this.material.uniforms[ name ] = {type:type, value:value };
@@ -139,8 +138,6 @@ var RayMarcher = function(){
 
     function update(){
 
-        if( this.material == null ) return;
-
         this.material.uniforms.time.value = ( Date.now() - this.startTime ) * .001;
 
         this.material.uniforms.fov.value = this.camera.fov * Math.PI / 180;
@@ -159,6 +156,7 @@ var RayMarcher = function(){
 
         if( this.loaded )
         {
+            this.update();
             this.renderer.render( this.scene, this.renderCamera );
         }
     }

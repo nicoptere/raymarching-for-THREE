@@ -189,10 +189,6 @@ cheap depth (in the main() function) :
 
     float depth = ( 1./ log( collision.x ) );
 
-scale an object:
-
-    primitive( ( position/scale ) ) * scale;
-
 repeat a shape at a given interval (described by a vec3 r ):
 
     vec3 repeat( vec3 p, vec3 r ) { return mod( p, r ) - .5 * r; }
@@ -211,8 +207,8 @@ you can [lookat](https://github.com/nicoptere/raymarching-for-THREE/blob/master/
 #examples
 ![halibut](https://cdn.rawgit.com/nicoptere/raymarching-for-THREE/master/img/halibut.jpg)<br>
 [halibut demo](http://barradeau.com/dump/raymarching/halibut.html)<br>
-![halibut](https://cdn.rawgit.com/nicoptere/raymarching-for-THREE/master/img/hulkbuster.jpg)<br>
-[halibut demo](http://barradeau.com/dump/raymarching/hulkbuster.html)<br>
+![hulkbuster](https://cdn.rawgit.com/nicoptere/raymarching-for-THREE/master/img/hulkbuster.jpg)<br>
+[hulkbuster demo](http://barradeau.com/dump/raymarching/hulkbuster.html)<br>
 
 #helpful links:
 

@@ -53,6 +53,7 @@
     function animate() {
 
         requestAnimationFrame( animate );
+        rm.update();
         rm.render();
         if( rm.loaded )composer.render();
 

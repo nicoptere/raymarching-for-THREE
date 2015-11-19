@@ -36,6 +36,9 @@ I've left the links to the resources I used in the [fragment file](https://githu
         function animate() {
 
             requestAnimationFrame( animate );
+            //update uniforms
+            rm.update();
+            //render
             rm.render();
 
         }
@@ -48,7 +51,7 @@ should give you something like this:
 [noise bulb demo](https://rawgit.com/nicoptere/raymarching-for-THREE/master/noise_bulb.html)<br>
 
 the 2 most important values for the raymarching are the maximum distance and the precision (the minimum step distance under which the raymarching loop bails out).
-by default, [they are being updated in the raymarcher update()](https://github.com/nicoptere/raymarching-for-THREE/blob/master/raymarcher.js#L145-L146) method (which is called by the rm.render() by default):
+by default, [they are being updated in the raymarcher update()](https://github.com/nicoptere/raymarching-for-THREE/blob/master/raymarcher.js#L145-L146) method:
 
 the default value for raymarchMaximumDistance is twice the length of the camera's position ; it gives enough depth to render most of the things
 
@@ -58,7 +61,20 @@ the default raymarchPrecision is 0.01 which is fairly high (= coarse):
 
         this.material.uniforms.raymarchPrecision.value = .01;
 
-if you need more accurate renders, increase the raymarchMaximumDistance and lower the raymarchPrecision.
+if you need more accurate renders, increase the raymarchMaximumDistance and lower the raymarchPrecision like so:
+
+        //update with default values
+        rm.update();
+
+        //override default raymarchMaximumDistance
+        if( rm.material != null )
+        {
+            rm.material.uniforms.raymarchMaximumDistance.value = rm.camera.position.length() * 4;
+            rm.material.uniforms.raymarchPrecision.value = 0.01;
+        }
+
+        //render with new uniform values
+        rm.render();
 
 
 also, the raymarching steps count is set directly in the shader like [here](https://github.com/nicoptere/raymarching-for-THREE/blob/master/glsl/fragment.glsl#L130)

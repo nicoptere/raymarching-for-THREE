@@ -42,7 +42,7 @@
         var w = window.innerWidth;
         var h = window.innerHeight;
 
-        rm = new RayMarcher().setSize( w,h ).loadFragmentShader( "glsl/noise_bulb.glsl" );
+        rm = new RayMarcher().setSize( w,h ).loadFragmentShader( "glsl/noise_bulb.glsl", animate );
         document.body.appendChild( rm.domElement );
 
         composer = new Composer( rm );
@@ -53,6 +53,7 @@
     function animate() {
 
         requestAnimationFrame( animate );
+
         rm.update();
         rm.render();
         if( rm.loaded )composer.render();
@@ -60,7 +61,6 @@
     }
 
     init();
-    animate();
 
 </script>
 </body>

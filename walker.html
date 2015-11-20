@@ -31,7 +31,7 @@
     var walker;
     function init() {
 
-        rm = new RayMarcher();
+        rm = new RayMarcher( 36,.1 );
         rm.loadFragmentShader("glsl/walker.glsl", onFragmentLoaded );
 
         co = new THREE.OrbitControls( rm.camera );
@@ -79,22 +79,11 @@
 
         requestAnimationFrame( animate );
 
-        if( rm.loaded ){
-
-            var l1 = rm.getUniform( "light1" );
-            if( l1 != null )
-            {
-                rm.getUniform( "light1" ).value.x = 20 * ( Math.cos( Date.now() * 0.001 ) );
-                rm.getUniform( "light1" ).value.z = 20 * ( Math.sin( Date.now() * 0.001 ) );
-            }
-        }
-
         co.update();
-
-        rm.update();
 
         walker.update();
 
+        rm.update();
         rm.render();
 
     }

@@ -126,8 +126,15 @@ float zigzag( float x, float m )
 const int raymarchSteps = 50;
 const float PI = 3.14159;
 
+//no height
+vec2 plane( vec3 p , vec3 n) { return vec2( dot(p, n), 1. ); }
+//with height
+vec2 plane( vec3 p , vec4 n) { return vec2( dot(p, n.xyz) + n.w, 1. ); }
+
 vec2 field( vec3 position )
 {
+
+
 
     //position
     vec3 zero = vec3(0.);
@@ -138,6 +145,7 @@ vec2 field( vec3 position )
     float rad = 500.;
     vec3 dir = vec3(.0,.0, time * 4.);
     vec2 ground = sphere( position + perlin( ( position + dir ) * .1 ), rad, vec3( 0.,-rad + 2.,0. ) );
+    //ground = unionAB( ground, plane( position - vec3( 0.,100.,0. ), vec3( 0.,-1.,0. ) ) );
 
     float o = zigzag( position.x, .25 ) + zigzag( position.x, .21 );
 

@@ -44,11 +44,12 @@
 
     function animate() {
 
+        requestAnimationFrame( animate );
+
         var s = .01;
         rm.target.z += s;
         rm.camera.position.z += s;
 
-        requestAnimationFrame( animate );
         rm.update();
         rm.render();
     }

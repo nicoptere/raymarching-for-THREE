@@ -52,15 +52,12 @@
 
     function animate() {
 
-        c.update();
         requestAnimationFrame( animate );
 
+        c.update();
+        rm.distance = rm.camera.position.length() * 4;
+
         rm.update();
-        if( rm.material != null )
-        {
-            //override default raymarchMaximumDistance
-            rm.material.uniforms.raymarchMaximumDistance.value = rm.camera.position.length() * 4;
-        }
         rm.render();
 
     }

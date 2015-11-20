@@ -28,7 +28,9 @@ I've left the links to the resources I used in the [fragment file](https://githu
             var w = window.innerWidth;
             var h = window.innerHeight;
 
-            rm = new RayMarcher().setSize( w,h ).loadFragmentShader( "glsl/noise_bulb.glsl" );
+            rm = new RayMarcher([optional distance : 50], [optional precision : 0.01] )
+                .setSize( w,h )
+                .loadFragmentShader( "glsl/noise_bulb.glsl", animate );
             document.body.appendChild( rm.domElement );
 
         }
@@ -43,7 +45,6 @@ I've left the links to the resources I used in the [fragment file](https://githu
 
         }
         init();
-        animate();
     </script>
 
 should give you something like this:
@@ -51,35 +52,24 @@ should give you something like this:
 [noise bulb demo](https://rawgit.com/nicoptere/raymarching-for-THREE/master/noise_bulb.html)<br>
 
 the 2 most important values for the raymarching are the maximum distance and the precision (the minimum step distance under which the raymarching loop bails out).
-by default, [they are being updated in the raymarcher update()](https://github.com/nicoptere/raymarching-for-THREE/blob/master/raymarcher.js#L145-L146) method:
+by default, their values are 50 and 0.01 respectively. you can set them directly like:
 
-the default value for raymarchMaximumDistance is twice the length of the camera's position ; it gives enough depth to render most of the things
+    rm.distance = X
+    rm.precision = Y
 
-        this.camera.position.length() * 2;
+    //then call an update to update the uniforms
+    rm.update();
+
+a 'good' value for raymarchMaximumDistance is twice the length of the camera's position ; it gives enough depth to render most of the things
+
+        rm.distance = this.camera.position.length() * 2;
 
 the default raymarchPrecision is 0.01 which is fairly high (= coarse):
 
-        this.material.uniforms.raymarchPrecision.value = .01;
+if you need more accurate renders, increase the rm.distance and lower the rm.precision
 
-if you need more accurate renders, increase the raymarchMaximumDistance and lower the raymarchPrecision like so:
-
-        //update with default values
-        rm.update();
-
-        //override default raymarchMaximumDistance
-        if( rm.material != null )
-        {
-            rm.material.uniforms.raymarchMaximumDistance.value = rm.camera.position.length() * 4;
-            rm.material.uniforms.raymarchPrecision.value = 0.01;
-        }
-
-        //render with new uniform values
-        rm.render();
-
-
-also, the raymarching steps count is set directly in the shader like [here](https://github.com/nicoptere/raymarching-for-THREE/blob/master/glsl/fragment.glsl#L130)
+also, the raymarching 'steps' count has to be set directly in the shader like [here](https://github.com/nicoptere/raymarching-for-THREE/blob/master/glsl/fragment.glsl#L130)
 increasing it will give much more precise results at the cost of more intensive computations.
-
 
 for the sake of exhibiting the beauty of Raymarching, the above shape is produced by [this distance estimator](https://github.com/nicoptere/raymarching-for-THREE/blob/master/glsl/noise_bulb.glsl#L171-L186):
 

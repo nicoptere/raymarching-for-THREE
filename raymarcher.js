@@ -4,7 +4,10 @@ var RayMarcher = function(){
     var cl = new THREE.CubeTextureLoader();
     var rc = new THREE.Raycaster();
     var mouse = new THREE.Vector2();
-    function RayMarcher(){
+    function RayMarcher( distance, precision ){
+
+        this.distance = distance || 50;
+        this.precision = precision || 0.01;
 
         //scene setup
 
@@ -60,8 +63,8 @@ var RayMarcher = function(){
                 fov:{ type:"f", value:45 },
                 camera:{ type:"v3", value:this.camera.position },
                 target:{ type:"v3", value:this.target },
-                raymarchMaximumDistance:{ type:"f", value:50 },
-                raymarchPrecision:{ type:"f", value:0.01}
+                raymarchMaximumDistance:{ type:"f", value:this.distance },
+                raymarchPrecision:{ type:"f", value:this.precision}
 
             },
             vertexShader : "void main() {gl_Position =  vec4( position, 1.0 );}",
@@ -166,8 +169,8 @@ var RayMarcher = function(){
 
         this.material.uniforms.fov.value = this.camera.fov * Math.PI / 180;
 
-        this.material.uniforms.raymarchMaximumDistance.value = this.camera.position.length() * 2;
-        this.material.uniforms.raymarchPrecision.value = .01;
+       this.material.uniforms.raymarchMaximumDistance.value = this.distance;
+       this.material.uniforms.raymarchPrecision.value = this.precision;
 
         this.material.uniforms.camera.value = this.camera.position;
 

@@ -28,7 +28,7 @@
     function init() {
 
         rm = new RayMarcher();
-        rm.loadFragmentShader("glsl/colors.glsl" );
+        rm.loadFragmentShader("glsl/colors.glsl", animate );
 
         new THREE.OrbitControls( rm.camera );
 
@@ -64,7 +64,6 @@
     }
 
     init();
-    animate();
 
 
 

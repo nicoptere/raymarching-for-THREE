@@ -225,6 +225,8 @@ you can [lookat](https://github.com/nicoptere/raymarching-for-THREE/blob/master/
 [halibut demo](http://barradeau.com/dump/raymarching/halibut.html)<br>
 ![hulkbuster](https://cdn.rawgit.com/nicoptere/raymarching-for-THREE/master/img/hulkbuster.jpg)<br>
 [hulkbuster demo](http://barradeau.com/dump/raymarching/hulkbuster.html)<br>
+![walker](https://cdn.rawgit.com/nicoptere/raymarching-for-THREE/master/img/walker.jpg)<br>
+[walker demo](http://barradeau.com/dump/raymarching/walker.html)<br>
 
 #helpful links:
 

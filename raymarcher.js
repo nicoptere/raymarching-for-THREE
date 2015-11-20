@@ -56,6 +56,7 @@ var RayMarcher = function(){
             uniforms :{
                 resolution:{ type:"v2", value:new THREE.Vector2( this.width, this.height ) },
                 time:{ type:"f", value:0 },
+                randomSeed:{ type:"f", value:Math.random() },
                 fov:{ type:"f", value:45 },
                 camera:{ type:"v3", value:this.camera.position },
                 target:{ type:"v3", value:this.target },
@@ -64,7 +65,8 @@ var RayMarcher = function(){
 
             },
             vertexShader : "void main() {gl_Position =  vec4( position, 1.0 );}",
-            fragmentShader : fs
+            fragmentShader : fs,
+            transparent:true
         });
         this.update();
 
@@ -157,7 +159,10 @@ var RayMarcher = function(){
 
     function update(){
 
+        if( this.material == null )return;
+
         this.material.uniforms.time.value = ( Date.now() - this.startTime ) * .001;
+        this.material.uniforms.randomSeed.value = Math.random();
 
         this.material.uniforms.fov.value = this.camera.fov * Math.PI / 180;
 

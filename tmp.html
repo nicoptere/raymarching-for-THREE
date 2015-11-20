@@ -20,9 +20,12 @@
 <script src="vendor/three.min.js"></script>
 <script src="vendor/controls/OrbitControls.js"></script>
 <script src="raymarcher.js"></script>
+<script src="assets/walker/Walker.js"></script>
 
 <script>
 
+
+    var walker;
     var rm;
     var c;
     function init() {
@@ -41,6 +44,10 @@
             ];
 
             scope.setCubemap( "cubemap", urls );
+
+            walker = new Walker(scope);
+            walker.update();
+
             animate();
         } );
         document.body.appendChild( rm.domElement );
@@ -63,15 +70,14 @@
 
     function animate() {
 
-        c.update();
         requestAnimationFrame( animate );
 
+        c.update();
+
         rm.update();
-        if( rm.material != null )
-        {
-            //override default raymarchMaximumDistance
-//            rm.material.uniforms.raymarchMaximumDistance.value = rm.camera.position.length() * 4;
-        }
+
+        walker.update();
+
         rm.render();
 
     }

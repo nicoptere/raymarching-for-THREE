@@ -21,40 +21,52 @@
 <script src="vendor/controls/OrbitControls.js"></script>
 
 <script src="raymarcher.js"></script>
-
+<script src="composer.js"></script>
+<script src="assets/walker/Walker.js"></script>
 
 <script>
 
     var rm;
+    var co;
+    var walker;
     function init() {
 
         rm = new RayMarcher();
-        rm.loadFragmentShader("glsl/mesh.glsl", onFragmentLoaded );
+        rm.loadFragmentShader("glsl/walker.glsl", onFragmentLoaded );
 
+        co = new THREE.OrbitControls( rm.camera );
+        co.minDistance = 18;
+        co.maxDistance = 24;
 
-        new THREE.OrbitControls( rm.camera );
-        rm.camera.position.z = 8;
+        co.minPolarAngle = Math.PI / 4 - Math.PI / 12;
+        co.maxPolarAngle = Math.PI / 2 - Math.PI / 8;
+
+        rm.camera.position.x = 6;
+        rm.camera.position.y = 10;
+        rm.camera.position.z = 12;
 
         document.body.appendChild( rm.domElement );
         window.addEventListener( "resize", onResize, false );
         onResize();
     }
 
-    var box;
     function onFragmentLoaded( scope )
     {
-        rm.scene.remove( rm.mesh );
 
-        box = new THREE.Mesh( new THREE.CubeGeometry(1,1,1), rm.material );//new THREE.MeshBasicMaterial({color:0xFF0000, side:THREE.DoubleSide}) );
-        rm.scene.add(box);
-        box.position.z = -1;
+        walker = new Walker(scope);
+        walker.update();
 
-        scope.setUniform( "color0", "v3", new THREE.Vector3(0.9, 0.9, 0.0) ); //yellow
-        scope.setUniform( "light0", "v3", new THREE.Vector3(-0.5, 0.75, -0.5) );
+        var path = "img/cubemap/cube03_";
+        var format = '.png';
+        var urls = [
+            path + '0' + format, path + '1' + format,
+            path + '2' + format, path + '3' + format,
+            path + '4' + format, path + '5' + format
+        ];
 
-        scope.setUniform( "color1", "v3", new THREE.Vector3(0.0, 0.2, 0.9) ); //blue
-        scope.setUniform( "light1", "v3", new THREE.Vector3( 0.5, -0.75, 0.5) );
+        scope.setCubemap( "cubemap", urls );
 
+        animate();
     }
 
     function onResize(e)
@@ -68,9 +80,7 @@
         requestAnimationFrame( animate );
 
         if( rm.loaded ){
-            box.rotation.x += .01;
-            box.rotation.y -= .005;
-//            rm.target.y = 2 * ( Math.sin( Date.now() * 0.001 ) * .5 );
+
             var l1 = rm.getUniform( "light1" );
             if( l1 != null )
             {
@@ -78,13 +88,18 @@
                 rm.getUniform( "light1" ).value.z = 20 * ( Math.sin( Date.now() * 0.001 ) );
             }
         }
+
+        co.update();
+
         rm.update();
+
+        walker.update();
+
         rm.render();
 
     }
 
     init();
-    animate();
 
 
 

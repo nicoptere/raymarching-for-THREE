@@ -2,6 +2,7 @@
 // License Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License.
 uniform vec2 resolution;
 uniform float time;
+uniform float randomSeed;
 uniform float fov;
 uniform vec3 camera;
 uniform vec3 target;
@@ -10,7 +11,7 @@ uniform float raymarchPrecision;
 
 uniform sampler2D  texture;
 uniform samplerCube cubemap;
-
+uniform float anchors[45];
 /*
 Space Body
 my goal was to introduce some sub-surface scattering with hot color but the result is not as expected
@@ -20,7 +21,7 @@ mouse axis X for control the rock expansion
 
 #define BLOB
 
-#define shape(p) length(p)-2.8
+#define shape(p,r) length(p)-r
 
 float dstepf = 0.0;
 
@@ -45,11 +46,27 @@ float Voronesque( in vec3 p )
 #endif
 }
 
+vec2 unionAB(vec2 a, vec2 b){return vec2(min(a.x, b.x),1.);}
+vec2 intersectionAB(vec2 a, vec2 b){return vec2(max(a.x, b.x),1.);}
+vec2 blendAB( vec2 a, vec2 b, float t ){ return vec2(mix(a.x, b.x, t ),1.);}
+vec2 subtract(vec2 a, vec2 b){ return vec2(max(-a.x, b.x),1.); }
+//http://iquilezles.org/www/articles/smin/smin.htm
+vec2 smin( vec2 a, vec2 b, float k ) { float h = clamp( 0.5+0.5*(b.x-a.x)/k, 0.0, 1.0 ); return vec2( mix( b.x, a.x, h ) - k*h*(1.0-h), 1. ); }
+
+#define mPi 3.14159
+#define m2Pi 6.28318
+vec2 uvs(vec3 p)
+{
+    p = normalize(p);
+    return vec2( 0.5 + atan(p.z, p.x) / (m2Pi*1.1547), 0.5 - asin(p.y) / (mPi*1.5) );
+}
+
+
 ///////////////////////////////////
 vec2 map(vec3 p)
 {
     dstepf += 0.003;
-
+    /*
     vec2 res = vec2(0.);
 
 	float voro = Voronesque(p);
@@ -68,6 +85,13 @@ vec2 map(vec3 p)
 	float kernel = sp + 1.;
 	if (kernel < res.x )
 		res = vec2(kernel, 2.);
+    //*/
+    vec2 res = vec2(0.);
+    for( int i = 0; i < 45; i+= 3 )
+    {
+        vec3 p = vec3( anchors[ i ], anchors[i+1], anchors[i+2] );
+        res = unionAB( res, vec2( shape( p,1. ), 0. ) );
+    }
 
 	return res;
 }
@@ -140,21 +164,22 @@ void main()
 		d.x += s.x;
         p = ro+rd*d.x;
    	}
-
+    float alpha = 1.;
 	if (d.x<DPrec.y)
     {
-		vec3 n = nor(p, .1);
+		vec3 n = nor(p, .0001);
+		if( s.y < 2.5) // kernel
+		{
+			float b = dot(n,normalize(ro-p))*0.9;
+            f = (b*vec4(blackbody(2000.),0.9)+pow(b,0.2))*(1.0-d.x*.01);
+		}
 		if ( s.y < 1.5) // icy color
         {
 			rd = reflect(rd, n);
 			p += rd*d.x;
 			d.x += map(p).x * .001;
 			f.rgb = exp(-d.x / RockColor / 15.);
-		}
-		else if( s.y < 2.5) // kernel
-		{
-			float b = dot(n,normalize(ro-p))*0.9;
-            f = (b*vec4(blackbody(2000.),0.9)+pow(b,0.2))*(1.0-d.x*.01);
+
 		}
 
         vec3 reflRay = reflect(rd, n);
@@ -167,5 +192,5 @@ void main()
         f.rgb -= cubeRefr * .5;
    	}
 
-    gl_FragColor = mix( f, vec4(DeepSpaceColor, 1.), 1.0 - exp( -d.x*dstepf) );
+    gl_FragColor = vec4(  anchors[0],  anchors[1],  anchors[2], 1. );//mix( f, vec4(DeepSpaceColor, 1.) * vertices[0], 1.0 - exp( -d.x*dstepf) );
 }

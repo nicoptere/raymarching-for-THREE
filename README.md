@@ -51,6 +51,12 @@ should give you something like this:
 ![noise bulb](https://cdn.rawgit.com/nicoptere/raymarching-for-THREE/master/img/noise_bulb.jpg)<br>
 [noise bulb demo](https://rawgit.com/nicoptere/raymarching-for-THREE/master/noise_bulb.html)<br>
 
+the loadFragmentShader method, takes the url of the fragment shader (can be plain text), loads it and call the callback method if it was specified
+
+    loadFragmentShader( url, callback );
+
+passing the animate loop as a callback is a good idea but is not necessary.
+
 the 2 most important values for the raymarching are the maximum distance and the precision (the minimum step distance under which the raymarching loop bails out).
 by default, their values are 50 and 0.01 respectively. you can set them directly like:
 
@@ -182,7 +188,6 @@ see [the source shader](https://github.com/nicoptere/raymarching-for-THREE/blob/
         }
 
         init();
-        animate();
 
     </script>
 the composer contains whatever filters you can think of and is called after the RayMarcher' render<br>
